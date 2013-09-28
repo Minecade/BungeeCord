@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.version;
+package net.md_5.bungee.protocol.version.snapshot;
 
 import static net.md_5.bungee.protocol.OpCode.BYTE;
 import static net.md_5.bungee.protocol.OpCode.FLOAT;
@@ -6,6 +6,7 @@ import static net.md_5.bungee.protocol.OpCode.INT;
 import static net.md_5.bungee.protocol.OpCode.STRING;
 import net.md_5.bungee.protocol.OpCode;
 import net.md_5.bungee.protocol.packet.PacketC8IncremetStatistic;
+import net.md_5.bungee.protocol.version.Vanilla;
 import lombok.Getter;
 
 public class Vanilla13w36a extends Vanilla

@@ -61,8 +61,10 @@ import net.md_5.bungee.protocol.packet.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Packet3Chat;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.version.Vanilla;
-import net.md_5.bungee.protocol.version.Vanilla13w36a;
 import net.md_5.bungee.protocol.version.Vanilla162;
+import net.md_5.bungee.protocol.version.snapshot.Vanilla13w36a;
+import net.md_5.bungee.protocol.version.snapshot.Vanilla13w37b;
+import net.md_5.bungee.protocol.version.snapshot.Vanilla13w38c;
 import net.md_5.bungee.query.RemoteQuery;
 import net.md_5.bungee.tab.Custom;
 import net.md_5.bungee.util.CaseInsensitiveMap;
@@ -469,6 +471,10 @@ public class BungeeCord extends ProxyServer
                 return Vanilla162.PROTOCOL_VERSION;
             case Vanilla13w36a.PROTOCOL_VERSION:
                 return Vanilla13w36a.PROTOCOL_VERSION;
+            case Vanilla13w37b.PROTOCOL_VERSION:
+                return Vanilla13w37b.PROTOCOL_VERSION;
+            case Vanilla13w38c.PROTOCOL_VERSION:
+                return Vanilla13w38c.PROTOCOL_VERSION;
             default:
                 return Vanilla.PROTOCOL_VERSION;
         }
