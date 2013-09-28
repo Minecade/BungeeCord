@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.versions;
+package net.md_5.bungee.protocol.version;
 
 import io.netty.buffer.ByteBuf;
 import java.lang.reflect.Constructor;
@@ -39,7 +39,7 @@ public class Vanilla implements Protocol
     private static final Vanilla instance = new Vanilla();
     /*========================================================================*/
     @Getter
-    private final OpCode[][] opCodes = new OpCode[ 256 ][];
+    protected final OpCode[][] opCodes = new OpCode[ 256 ][];
     @SuppressWarnings("unchecked")
     @Getter
     public Class<? extends DefinedPacket>[] classes = new Class[ 256 ];

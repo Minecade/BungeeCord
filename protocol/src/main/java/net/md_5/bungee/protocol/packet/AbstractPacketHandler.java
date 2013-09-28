@@ -78,4 +78,9 @@ public abstract class AbstractPacketHandler
     public void handle(PacketCBTabComplete tabComplete) throws Exception
     {
     }
+    
+    // 13w36a and up
+    public void handle(PacketC8IncremetStatistic incrementStatistic) throws Exception
+    {
+    }
 }

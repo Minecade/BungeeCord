@@ -50,7 +50,7 @@ import net.md_5.bungee.protocol.packet.PacketFCEncryptionResponse;
 import net.md_5.bungee.protocol.packet.PacketFDEncryptionRequest;
 import net.md_5.bungee.protocol.packet.PacketFEPing;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
-import net.md_5.bungee.protocol.versions.Vanilla;
+import net.md_5.bungee.protocol.version.Vanilla;
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 

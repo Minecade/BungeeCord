@@ -16,7 +16,7 @@ import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.versions.Vanilla;
+import net.md_5.bungee.protocol.version.Vanilla;
 
 public class PipelineUtils
 {

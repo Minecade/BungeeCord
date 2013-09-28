@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.versions;
+package net.md_5.bungee.protocol.version;
 
 import lombok.Getter;
 
