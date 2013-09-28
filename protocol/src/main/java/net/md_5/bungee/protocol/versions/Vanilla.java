@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import lombok.Getter;
 import static net.md_5.bungee.protocol.OpCode.*;
+import net.md_5.bungee.protocol.BadPacketException;
 import net.md_5.bungee.protocol.OpCode;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.DefinedPacket;
@@ -53,7 +54,6 @@ public class Vanilla implements Protocol
     {
         Vanilla.getInstance(),
         Vanilla162.getInstance(),
-        Vanilla163.getInstance(),
     };
 
     public Vanilla()
