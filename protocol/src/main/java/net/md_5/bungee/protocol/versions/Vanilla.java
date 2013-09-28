@@ -87,7 +87,7 @@ public class Vanilla implements Protocol
         DefinedPacket packet = read( packetId, buf, this );
         if ( buf.readerIndex() == start )
         {
-            throw new RuntimeException( "Unknown packet id " + packetId );
+            throw new BadPacketException( "Unknown packet id " + packetId );
         }
         return packet;
     }
@@ -132,7 +132,7 @@ public class Vanilla implements Protocol
 
         return ret;
     }
-    
+
     public byte getProtocolVersion() {
         return PROTOCOL_VERSION;
     }
@@ -146,7 +146,7 @@ public class Vanilla implements Protocol
                 return protocol;
             }
         }
-        
+
         return Vanilla.getInstance();
     }
 
@@ -406,10 +406,6 @@ public class Vanilla implements Protocol
         opCodes[0xCA] = new OpCode[]
         {
             BYTE, FLOAT, FLOAT
-        };
-        opCodes[0xCB] = new OpCode[]
-        {
-            STRING
         };
     }
 }
