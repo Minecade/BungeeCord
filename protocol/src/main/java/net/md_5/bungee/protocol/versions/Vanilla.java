@@ -1,10 +1,12 @@
-package net.md_5.bungee.protocol;
+package net.md_5.bungee.protocol.versions;
 
 import io.netty.buffer.ByteBuf;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import lombok.Getter;
 import static net.md_5.bungee.protocol.OpCode.*;
+import net.md_5.bungee.protocol.OpCode;
+import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Packet0KeepAlive;
 import net.md_5.bungee.protocol.packet.Packet1Login;
@@ -39,13 +41,20 @@ public class Vanilla implements Protocol
     private final OpCode[][] opCodes = new OpCode[ 256 ][];
     @SuppressWarnings("unchecked")
     @Getter
-    protected Class<? extends DefinedPacket>[] classes = new Class[ 256 ];
+    public Class<? extends DefinedPacket>[] classes = new Class[ 256 ];
     @SuppressWarnings("unchecked")
     @Getter
     private Constructor<? extends DefinedPacket>[] constructors = new Constructor[ 256 ];
     @Getter
     protected PacketReader skipper;
     /*========================================================================*/
+    @Getter
+    private final static Vanilla[] protocols = new Vanilla[]
+    {
+        Vanilla.getInstance(),
+        Vanilla162.getInstance(),
+        Vanilla163.getInstance(),
+    };
 
     public Vanilla()
     {
@@ -78,7 +87,7 @@ public class Vanilla implements Protocol
         DefinedPacket packet = read( packetId, buf, this );
         if ( buf.readerIndex() == start )
         {
-            throw new BadPacketException( "Unknown packet id " + packetId );
+            throw new RuntimeException( "Unknown packet id " + packetId );
         }
         return packet;
     }
@@ -123,8 +132,24 @@ public class Vanilla implements Protocol
 
         return ret;
     }
-
     
+    public byte getProtocolVersion() {
+        return PROTOCOL_VERSION;
+    }
+
+    public static Vanilla fromByte(byte version)
+    {
+        for(Vanilla protocol : protocols)
+        {
+            if(protocol.getProtocolVersion() == version)
+            {
+                return protocol;
+            }
+        }
+        
+        return Vanilla.getInstance();
+    }
+
     {
         opCodes[0x04] = new OpCode[]
         {
@@ -381,6 +406,10 @@ public class Vanilla implements Protocol
         opCodes[0xCA] = new OpCode[]
         {
             BYTE, FLOAT, FLOAT
+        };
+        opCodes[0xCB] = new OpCode[]
+        {
+            STRING
         };
     }
 }

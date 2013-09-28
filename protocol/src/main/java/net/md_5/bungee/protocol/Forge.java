@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.md_5.bungee.protocol.packet.DefinedPacket;
 import net.md_5.bungee.protocol.packet.forge.Forge1Login;
 import net.md_5.bungee.protocol.skip.PacketReader;
+import net.md_5.bungee.protocol.versions.Vanilla;
 
 public class Forge extends Vanilla
 {

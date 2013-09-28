@@ -41,7 +41,6 @@ import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.Forge;
 import net.md_5.bungee.protocol.MinecraftInput;
-import net.md_5.bungee.protocol.Vanilla;
 import net.md_5.bungee.protocol.packet.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Packet1Login;
 import net.md_5.bungee.protocol.packet.Packet2Handshake;
@@ -51,6 +50,7 @@ import net.md_5.bungee.protocol.packet.PacketFCEncryptionResponse;
 import net.md_5.bungee.protocol.packet.PacketFDEncryptionRequest;
 import net.md_5.bungee.protocol.packet.PacketFEPing;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
+import net.md_5.bungee.protocol.versions.Vanilla;
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 
@@ -166,7 +166,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
             forced.ping( pingBack );
         } else
         {
-            pingBack.done( new ServerPing( bungee.getProtocolVersion(), bungee.getGameVersion(), motd, bungee.getOnlineCount(), listener.getMaxPlayers() ), null );
+            pingBack.done( new ServerPing( bungee.getProtocolVersion(getVersion()), bungee.getGameVersion(), motd, bungee.getOnlineCount(), listener.getMaxPlayers() ), null );
         }
     }
 
@@ -200,15 +200,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         this.handshake = handshake;
         this.vHost = new InetSocketAddress( handshake.getHost(), handshake.getPort() );
         bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+        byte connectingVersion = handshake.getProtocolVersion();
+        byte connectedVersion = bungee.getProtocolVersion(connectingVersion);
 
         bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
 
-        if ( handshake.getProtocolVersion() > Vanilla.PROTOCOL_VERSION )
+        if ( connectingVersion > connectedVersion )
         {
             disconnect( bungee.getTranslation( "outdated_server" ) );
-        } else if ( handshake.getProtocolVersion() < Vanilla.PROTOCOL_VERSION )
+            return;
+        } else if ( connectingVersion < connectedVersion )
         {
             disconnect( bungee.getTranslation( "outdated_client" ) );
+            return;
         }
 
         if ( handshake.getUsername().length() > 16 )

@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import net.md_5.bungee.protocol.packet.AbstractPacketHandler;
 import net.md_5.bungee.protocol.packet.DefinedPacket;
+import net.md_5.bungee.protocol.versions.Vanilla;
+
 import org.junit.Assert;
 import org.junit.Test;
 

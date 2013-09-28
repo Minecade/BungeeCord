@@ -1,5 +1,7 @@
 package net.md_5.bungee.protocol;
 
+import net.md_5.bungee.protocol.versions.Vanilla;
+
 import org.junit.Assert;
 import org.junit.Test;
 

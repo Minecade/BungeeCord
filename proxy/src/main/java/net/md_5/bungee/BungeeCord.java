@@ -60,7 +60,9 @@ import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.packet.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Packet3Chat;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
-import net.md_5.bungee.protocol.Vanilla;
+import net.md_5.bungee.protocol.versions.Vanilla;
+import net.md_5.bungee.protocol.versions.Vanilla162;
+import net.md_5.bungee.protocol.versions.Vanilla163;
 import net.md_5.bungee.query.RemoteQuery;
 import net.md_5.bungee.tab.Custom;
 import net.md_5.bungee.util.CaseInsensitiveMap;
@@ -123,7 +125,7 @@ public class BungeeCord extends ProxyServer
     @Getter
     private ConnectionThrottle connectionThrottle;
 
-    
+
     {
         // TODO: Proper fallback when we interface the manager
         getPluginManager().registerCommand( null, new CommandReload() );
@@ -456,6 +458,20 @@ public class BungeeCord extends ProxyServer
     public byte getProtocolVersion()
     {
         return Vanilla.PROTOCOL_VERSION;
+    }
+
+    @Override
+    public byte getProtocolVersion(byte requestProtocolVersion)
+    {
+        switch ( requestProtocolVersion )
+        {
+            case Vanilla162.PROTOCOL_VERSION:
+                return Vanilla162.PROTOCOL_VERSION;
+            case Vanilla163.PROTOCOL_VERSION:
+                return Vanilla163.PROTOCOL_VERSION;
+            default:
+                return Vanilla.PROTOCOL_VERSION;
+        }
     }
 
     @Override

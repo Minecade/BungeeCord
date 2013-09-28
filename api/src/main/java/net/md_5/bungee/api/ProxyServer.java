@@ -174,13 +174,21 @@ public abstract class ProxyServer
      * @return the supported Minecraft version
      */
     public abstract String getGameVersion();
-
+    
     /**
      * Get the Minecraft protocol version supported by this proxy.
      *
      * @return the Minecraft protocol version
      */
     public abstract byte getProtocolVersion();
+    
+    /**
+     * Get the Minecraft protocol version that either supports the request or the proxy default
+     * 
+     * @param requestProtocolVersion
+     * @return the Minecraft protocol version
+     */
+    public abstract byte getProtocolVersion(byte requestProtocolVersion);
 
     /**
      * Factory method to construct an implementation specific server info
