@@ -6,6 +6,7 @@ import static net.md_5.bungee.protocol.OpCode.INT;
 import static net.md_5.bungee.protocol.OpCode.STRING;
 import net.md_5.bungee.protocol.OpCode;
 import net.md_5.bungee.protocol.packet.PacketC8IncremetStatistic;
+import net.md_5.bungee.protocol.skip.PacketReader;
 import net.md_5.bungee.protocol.version.Vanilla;
 import lombok.Getter;
 
@@ -18,6 +19,7 @@ public class Vanilla13w36a extends Vanilla
     {
         super(protocol, version);
         classes[0xC8] = PacketC8IncremetStatistic.class;
+        skipper = new PacketReader( this ); // FIXME
     }
     
     {
