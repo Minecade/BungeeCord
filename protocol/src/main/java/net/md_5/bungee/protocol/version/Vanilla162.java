@@ -4,8 +4,10 @@ import lombok.Getter;
 
 public class Vanilla162 extends Vanilla
 {
-    public static final byte PROTOCOL_VERSION = 74;
-    public static final String GAME_VERSION = "1.6.2";
     @Getter
-    private static final Vanilla instance = new Vanilla162();
+    protected static final Vanilla162 instance = new Vanilla162((byte) 74, "1.6.2");
+
+    public Vanilla162( final byte protocol, final String version ) {
+        super(protocol, version);
+    }
 }

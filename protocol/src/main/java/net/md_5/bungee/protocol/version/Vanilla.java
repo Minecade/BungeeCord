@@ -29,14 +29,17 @@ import net.md_5.bungee.protocol.packet.PacketFDEncryptionRequest;
 import net.md_5.bungee.protocol.packet.PacketFEPing;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
 import net.md_5.bungee.protocol.skip.PacketReader;
+import net.md_5.bungee.protocol.version.snapshot.Vanilla13w36a;
+import net.md_5.bungee.protocol.version.snapshot.Vanilla13w37b;
+import net.md_5.bungee.protocol.version.snapshot.Vanilla13w38c;
 
 public class Vanilla implements Protocol
 {
 
-    public static final byte PROTOCOL_VERSION = 78;
-    public static final String GAME_VERSION = "1.6.4";
+    protected final byte PROTOCOL_VERSION;
+    protected final String GAME_VERSION;
     @Getter
-    private static final Vanilla instance = new Vanilla();
+    protected static final Vanilla instance = new Vanilla();
     /*========================================================================*/
     @Getter
     protected final OpCode[][] opCodes = new OpCode[ 256 ][];
@@ -45,19 +48,31 @@ public class Vanilla implements Protocol
     public Class<? extends DefinedPacket>[] classes = new Class[ 256 ];
     @SuppressWarnings("unchecked")
     @Getter
-    private Constructor<? extends DefinedPacket>[] constructors = new Constructor[ 256 ];
+    protected Constructor<? extends DefinedPacket>[] constructors = new Constructor[ 256 ];
     @Getter
     protected PacketReader skipper;
     /*========================================================================*/
     @Getter
     private final static Vanilla[] protocols = new Vanilla[]
     {
-        Vanilla.getInstance(),
-        Vanilla162.getInstance(),
+        Vanilla162.getInstance(),     // 74
+        Vanilla13w36a.getInstance(),  // 75
+        Vanilla13w37b.getInstance(),  // 76
+        // 1.6.3                      // 77
+        Vanilla.getInstance(),        // 78
+        Vanilla13w38c.getInstance(),  // 79
     };
 
     public Vanilla()
     {
+        this((byte) 74, "1.6.4");
+    }
+
+    public Vanilla( final byte protocol, final String version )
+    {
+        PROTOCOL_VERSION = protocol;
+        GAME_VERSION = version;
+        
         classes[0x00] = Packet0KeepAlive.class;
         classes[0x01] = Packet1Login.class;
         classes[0x02] = Packet2Handshake.class;
@@ -133,15 +148,21 @@ public class Vanilla implements Protocol
         return ret;
     }
 
-    public byte getProtocolVersion() {
+    public byte getProtocolVersion()
+    {
         return PROTOCOL_VERSION;
+    }
+    
+    public String getGameVersion()
+    {
+        return GAME_VERSION;
     }
 
     public static Vanilla fromByte(byte version)
     {
-        for(Vanilla protocol : protocols)
+        for ( Vanilla protocol : protocols )
         {
-            if(protocol.getProtocolVersion() == version)
+            if ( protocol.getProtocolVersion() == version )
             {
                 return protocol;
             }

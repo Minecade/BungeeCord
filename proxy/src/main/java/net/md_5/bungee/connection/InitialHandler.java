@@ -166,7 +166,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
             forced.ping( pingBack );
         } else
         {
-            pingBack.done( new ServerPing( bungee.getProtocolVersion(getVersion()), bungee.getGameVersion(), motd, bungee.getOnlineCount(), listener.getMaxPlayers() ), null );
+            pingBack.done( new ServerPing( Vanilla.fromByte( getVersion() ).getProtocolVersion(), bungee.getGameVersion(), motd, bungee.getOnlineCount(), listener.getMaxPlayers() ), null );
         }
     }
 
@@ -200,16 +200,20 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         this.handshake = handshake;
         this.vHost = new InetSocketAddress( handshake.getHost(), handshake.getPort() );
         bungee.getLogger().log( Level.INFO, "{0} has connected", this );
-        byte connectingVersion = handshake.getProtocolVersion();
-        byte connectedVersion = bungee.getProtocolVersion(connectingVersion);
 
         bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandler.this, handshake ) );
 
-        if ( connectingVersion > connectedVersion )
+        byte connectingVersion = handshake.getProtocolVersion();
+        Vanilla connectedVersion = Vanilla.fromByte( connectingVersion );
+
+        // set proper protocol
+        ((PacketDecoder) ch.getHandle().pipeline().get(PipelineUtils.PACKET_DECODE_HANDLER)).setProtocol(connectedVersion);
+
+        if ( connectingVersion > connectedVersion.getProtocolVersion() )
         {
             disconnect( bungee.getTranslation( "outdated_server" ) );
             return;
-        } else if ( connectingVersion < connectedVersion )
+        } else if ( connectingVersion < connectedVersion.getProtocolVersion() )
         {
             disconnect( bungee.getTranslation( "outdated_client" ) );
             return;

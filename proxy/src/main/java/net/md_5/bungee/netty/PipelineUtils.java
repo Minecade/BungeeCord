@@ -67,7 +67,11 @@ public class PipelineUtils
             Protocol protocol = ch.attr( PROTOCOL ).get();
             if( protocol == null )
             {
+                System.out.println("Protocol was null");
                 protocol = Vanilla.getInstance();
+            }
+            else {
+                System.out.println("Protocol was NOT null: " + protocol);
             }
 
             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );

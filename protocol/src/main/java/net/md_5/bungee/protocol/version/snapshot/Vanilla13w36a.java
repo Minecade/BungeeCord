@@ -11,18 +11,17 @@ import lombok.Getter;
 
 public class Vanilla13w36a extends Vanilla
 {
-    public static final byte PROTOCOL_VERSION = 75;
-    public static final String GAME_VERSION = "13w36a";
     @Getter
-    private static final Vanilla instance = new Vanilla13w36a();
+    protected static final Vanilla13w36a instance = new Vanilla13w36a((byte) 75, "13w36a");
     
-    public Vanilla13w36a()
+    public Vanilla13w36a(byte protocol, String version)
     {
-        super();
+        super(protocol, version);
         classes[0xC8] = PacketC8IncremetStatistic.class;
     }
     
     {
+        opCodes[0xC8] = null;
         opCodes[0x3E] = new OpCode[]
         {
             STRING, INT, INT, INT, FLOAT, BYTE, BYTE

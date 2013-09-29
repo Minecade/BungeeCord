@@ -183,14 +183,6 @@ public abstract class ProxyServer
     public abstract byte getProtocolVersion();
     
     /**
-     * Get the Minecraft protocol version that either supports the request or the proxy default
-     * 
-     * @param requestProtocolVersion
-     * @return the Minecraft protocol version
-     */
-    public abstract byte getProtocolVersion(byte requestProtocolVersion);
-
-    /**
      * Factory method to construct an implementation specific server info
      * instance.
      *
