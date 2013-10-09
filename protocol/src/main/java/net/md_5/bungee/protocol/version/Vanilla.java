@@ -32,6 +32,7 @@ import net.md_5.bungee.protocol.skip.PacketReader;
 import net.md_5.bungee.protocol.version.snapshot.Vanilla13w36a;
 import net.md_5.bungee.protocol.version.snapshot.Vanilla13w37b;
 import net.md_5.bungee.protocol.version.snapshot.Vanilla13w38c;
+import net.md_5.bungee.protocol.version.snapshot.Vanilla13w39b;
 
 public class Vanilla implements Protocol
 {
@@ -61,6 +62,7 @@ public class Vanilla implements Protocol
         // 1.6.3                      // 77
         Vanilla.getInstance(),        // 78
         Vanilla13w38c.getInstance(),  // 79
+        Vanilla13w39b.getInstance(),  // 80
     };
 
     public Vanilla()
