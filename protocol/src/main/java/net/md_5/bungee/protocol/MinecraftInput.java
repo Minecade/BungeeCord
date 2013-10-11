@@ -35,4 +35,23 @@ public class MinecraftInput
 
         return new String( c );
     }
+    
+    // TODO
+    public int readVarInt()
+    {
+        int var1 = 0;
+        int var2 = 0;
+
+        byte var3;
+
+        do {
+            var3 = this.readByte();
+            var1 |= (var3 & 127) << var2++ * 7;
+            if (var2 > 5) {
+                throw new RuntimeException("VarInt too big");
+            }
+        } while ((var3 & 128) == 128);
+
+        return var1;
+    }
 }
