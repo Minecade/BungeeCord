@@ -1,16 +1,12 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Preconditions;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import java.io.DataInput;
 import java.security.PublicKey;
 import java.util.Objects;
 import java.util.Queue;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import lombok.RequiredArgsConstructor;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
@@ -22,80 +18,25 @@ import net.md_5.bungee.api.score.Team;
 import net.md_5.bungee.connection.CancelSendSignal;
 import net.md_5.bungee.connection.DownstreamBridge;
 import net.md_5.bungee.netty.HandlerBoss;
-import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.CipherDecoder;
 import net.md_5.bungee.netty.CipherEncoder;
 import net.md_5.bungee.netty.PacketDecoder;
-import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.netty.PipelineUtils;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Forge;
 import net.md_5.bungee.protocol.MinecraftOutput;
-import net.md_5.bungee.protocol.packet.DefinedPacket;
-import net.md_5.bungee.protocol.packet.Packet1Login;
-import net.md_5.bungee.protocol.packet.Packet9Respawn;
-import net.md_5.bungee.protocol.packet.PacketCEScoreboardObjective;
-import net.md_5.bungee.protocol.packet.PacketD1Team;
-import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
-import net.md_5.bungee.protocol.packet.PacketFCEncryptionResponse;
-import net.md_5.bungee.protocol.packet.PacketFDEncryptionRequest;
-import net.md_5.bungee.protocol.packet.PacketFFKick;
+import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.forge.Forge1Login;
 
-@RequiredArgsConstructor
-public class ServerConnector extends PacketHandler
+public class ServerConnector extends ServerConnectorAbstract
 {
 
-    private final ProxyServer bungee;
-    private ChannelWrapper ch;
-    private final UserConnection user;
-    private final BungeeServerInfo target;
-    private State thisState = State.ENCRYPT_REQUEST;
     private SecretKey secretkey;
     private boolean sentMessages;
 
-    private enum State
+    public ServerConnector(ProxyServer bungee, UserConnection user, BungeeServerInfo target)
     {
-
-        ENCRYPT_REQUEST, ENCRYPT_RESPONSE, LOGIN, FINISHED;
-    }
-
-    @Override
-    public void exception(Throwable t) throws Exception
-    {
-        String message = "Exception Connecting:" + Util.exception( t );
-        if ( user.getServer() == null )
-        {
-            user.disconnect( message );
-        } else
-        {
-            user.sendMessage( ChatColor.RED + message );
-        }
-    }
-
-    @Override
-    public void connected(ChannelWrapper channel) throws Exception
-    {
-        this.ch = channel;
-
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF( "Login" );
-        out.writeUTF( user.getAddress().getHostString() );
-        out.writeInt( user.getAddress().getPort() );
-        channel.write( new PacketFAPluginMessage( "BungeeCord", out.toByteArray() ) );
-
-        channel.write( user.getPendingConnection().getHandshake() );
-
-        // Skip encryption if we are not using Forge
-        if ( user.getPendingConnection().getForgeLogin() == null )
-        {
-            channel.write( PacketConstants.CLIENT_LOGIN );
-        }
-    }
-
-    @Override
-    public void disconnected(ChannelWrapper channel) throws Exception
-    {
-        user.getPendingConnects().remove( target );
+        super(bungee, user, target);
     }
 
     @Override
@@ -117,13 +58,13 @@ public class ServerConnector extends PacketHandler
             }
         }
 
-        for ( PacketFAPluginMessage message : user.getPendingConnection().getRegisterMessages() )
+        for ( DefinedPacket message : user.getPendingConnection().getRegisterMessages() )
         {
             ch.write( message );
         }
         if ( !sentMessages )
         {
-            for ( PacketFAPluginMessage message : user.getPendingConnection().getLoginMessages() )
+            for ( DefinedPacket message : user.getPendingConnection().getLoginMessages() )
             {
                 ch.write( message );
             }
@@ -211,7 +152,7 @@ public class ServerConnector extends PacketHandler
     @Override
     public void handle(PacketFDEncryptionRequest encryptRequest) throws Exception
     {
-        Preconditions.checkState( thisState == State.ENCRYPT_REQUEST, "Not expecting ENCRYPT_REQUEST" );
+        Preconditions.checkState( thisState == State.INITIAL, "Not expecting INITIAL" );
 
         // Only need to handle this if we want to use encryption
         if ( user.getPendingConnection().getForgeLogin() != null )
@@ -225,7 +166,7 @@ public class ServerConnector extends PacketHandler
             ch.write( new PacketFCEncryptionResponse( shared, token ) );
 
             Cipher encrypt = EncryptionUtil.getCipher( Cipher.ENCRYPT_MODE, secretkey );
-            ch.addBefore( PipelineUtils.PACKET_DECODE_HANDLER, PipelineUtils.ENCRYPT_HANDLER, new CipherEncoder( encrypt ) );
+            ch.addBefore( PipelineUtils.PACKET_DECODER, PipelineUtils.ENCRYPT_HANDLER, new CipherEncoder( encrypt ) );
 
             thisState = State.ENCRYPT_RESPONSE;
         } else
@@ -240,7 +181,7 @@ public class ServerConnector extends PacketHandler
         Preconditions.checkState( thisState == State.ENCRYPT_RESPONSE, "Not expecting ENCRYPT_RESPONSE" );
 
         Cipher decrypt = EncryptionUtil.getCipher( Cipher.DECRYPT_MODE, secretkey );
-        ch.addBefore( PipelineUtils.PACKET_DECODE_HANDLER, PipelineUtils.DECRYPT_HANDLER, new CipherDecoder( decrypt ) );
+        ch.addBefore( PipelineUtils.PACKET_DECODER, PipelineUtils.DECRYPT_HANDLER, new CipherDecoder( decrypt ) );
 
         ch.write( user.getPendingConnection().getForgeLogin() );
 
@@ -299,17 +240,11 @@ public class ServerConnector extends PacketHandler
         user.unsafe().sendPacket( pluginMessage ); // We have to forward these to the user, especially with Forge as stuff might break
         if ( !sentMessages && user.getPendingConnection().getForgeLogin() != null )
         {
-            for ( PacketFAPluginMessage message : user.getPendingConnection().getLoginMessages() )
+            for ( DefinedPacket message : user.getPendingConnection().getLoginMessages() )
             {
                 ch.write( message );
             }
             sentMessages = true;
         }
-    }
-
-    @Override
-    public String toString()
-    {
-        return "[" + user.getName() + "] <-> ServerConnector [" + target.getName() + "]";
     }
 }

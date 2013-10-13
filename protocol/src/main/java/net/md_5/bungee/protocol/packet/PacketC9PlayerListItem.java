@@ -1,5 +1,7 @@
 package net.md_5.bungee.protocol.packet;
 
+import net.md_5.bungee.protocol.AbstractPacketHandler;
+import net.md_5.bungee.protocol.DefinedPacket;
 import io.netty.buffer.ByteBuf;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,7 +24,7 @@ public class PacketC9PlayerListItem extends DefinedPacket
 
     public PacketC9PlayerListItem(String username, boolean online, short ping)
     {
-        super( 0xC9 );
+        this();
         this.username = username;
         this.online = online;
         this.ping = ping;

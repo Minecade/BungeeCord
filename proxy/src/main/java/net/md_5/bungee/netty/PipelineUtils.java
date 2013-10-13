@@ -13,9 +13,16 @@ import net.md_5.bungee.BungeeServerInfo;
 import net.md_5.bungee.ServerConnector;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.connection.InitialHandlerSnapshot;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ListenerInfo;
+import net.md_5.bungee.protocol.MinecraftProtocol;
 import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.snapshot.MinecraftDecoder;
+import net.md_5.bungee.protocol.snapshot.MinecraftEncoder;
+import net.md_5.bungee.protocol.snapshot.Varint21FrameDecoder;
+import net.md_5.bungee.protocol.snapshot.Varint21LengthFieldPrepender;
+import net.md_5.bungee.protocol.version.Snapshot;
 import net.md_5.bungee.protocol.version.Vanilla;
 
 public class PipelineUtils
@@ -24,7 +31,7 @@ public class PipelineUtils
     public static final AttributeKey<ListenerInfo> LISTENER = new AttributeKey<>( "ListerInfo" );
     public static final AttributeKey<UserConnection> USER = new AttributeKey<>( "User" );
     public static final AttributeKey<BungeeServerInfo> TARGET = new AttributeKey<>( "Target" );
-    public static final AttributeKey<Protocol> PROTOCOL = new AttributeKey<>( "Protocol" );
+    public static final AttributeKey<MinecraftProtocol> PROTOCOL = new AttributeKey<>( "Protocol" );
     public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
     {
         @Override
@@ -38,17 +45,32 @@ public class PipelineUtils
             }
 
             BASE.initChannel( ch );
-            ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( ProxyServer.getInstance(), ch.attr( LISTENER ).get() ) );
+            if ( ch.attr( PROTOCOL ).get() instanceof Snapshot )
+            {
+                ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Snapshot.HANDSHAKE, true ) );
+                ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Snapshot.HANDSHAKE, true ) );
+                ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandlerSnapshot( ProxyServer.getInstance(), ch.attr( LISTENER ).get() ) );
+            } else
+            {
+                ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( ProxyServer.getInstance(), ch.attr( LISTENER ).get() ) );
+            }
         }
     };
+
+    // GENERAL
     public static final Base BASE = new Base();
-    private static final DefinedPacketEncoder packetEncoder = new DefinedPacketEncoder();
-    public static String TIMEOUT_HANDLER = "timeout";
-    public static String PACKET_DECODE_HANDLER = "packet-decoder";
-    public static String PACKET_ENCODE_HANDLER = "packet-encoder";
     public static String BOSS_HANDLER = "inbound-boss";
+    public static String TIMEOUT_HANDLER = "timeout";
     public static String ENCRYPT_HANDLER = "encrypt";
     public static String DECRYPT_HANDLER = "decrypt";
+    public static String PACKET_DECODER = "packet-decoder";
+    public static String PACKET_ENCODER = "packet-encoder";
+    // 1.6
+    private static final DefinedPacketEncoder packetEncoder = new DefinedPacketEncoder();
+    // SNAPSHOT
+    private static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
+    public static String FRAME_DECODER = "frame-decoder";
+    public static String FRAME_PREPENDER = "frame-prepender";
 
     public final static class Base extends ChannelInitializer<Channel>
     {
@@ -63,20 +85,26 @@ public class PipelineUtils
             {
                 // IP_TOS is not supported (Windows XP / Windows Server 2003)
             }
-            
-            Protocol protocol = ch.attr( PROTOCOL ).get();
+
+            MinecraftProtocol protocol = ch.attr( PROTOCOL ).get();
             if( protocol == null )
             {
-                System.out.println("Protocol was null");
                 protocol = Vanilla.getInstance();
-            }
-            else {
-                System.out.println("Protocol was NOT null: " + protocol);
+                ch.attr( PROTOCOL ).set(protocol);
             }
 
             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
-            ch.pipeline().addLast( PACKET_DECODE_HANDLER, new PacketDecoder( protocol ) );
-            ch.pipeline().addLast( PACKET_ENCODE_HANDLER, packetEncoder );
+
+            if ( protocol instanceof Snapshot )
+            {
+                ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
+                ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
+            } else
+            {
+                ch.pipeline().addLast( PACKET_DECODER, new PacketDecoder( (Protocol) protocol ) );
+                ch.pipeline().addLast( PACKET_ENCODER, packetEncoder );
+            }
+
             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
         }
     };

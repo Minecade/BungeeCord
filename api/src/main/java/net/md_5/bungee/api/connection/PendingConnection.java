@@ -1,14 +1,18 @@
 package net.md_5.bungee.api.connection;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.Getter;
 import net.md_5.bungee.api.config.ListenerInfo;
+import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 
 /**
  * Represents a user attempting to log into the proxy.
  */
 public interface PendingConnection extends Connection
 {
-
     /**
      * Get the requested username.
      *
@@ -36,4 +40,6 @@ public interface PendingConnection extends Connection
      * @return the accepting listener
      */
     ListenerInfo getListener();
+    
+    String getUUID();
 }

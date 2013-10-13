@@ -99,4 +99,6 @@ public interface ProxiedPlayer extends Connection, CommandSender
      * @param server the server to set
      */
     void setReconnectServer(ServerInfo server);
+    
+    String getUUID();
 }

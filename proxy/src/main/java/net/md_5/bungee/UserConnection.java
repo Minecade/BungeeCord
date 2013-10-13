@@ -19,7 +19,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -27,16 +26,20 @@ import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.api.tab.TabListHandler;
-import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.connection.InitialHandlerAbstract;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.HandlerBoss;
-import net.md_5.bungee.netty.PacketWrapper;
 import net.md_5.bungee.netty.PipelineUtils;
-import net.md_5.bungee.protocol.packet.DefinedPacket;
+import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.MinecraftProtocol;
+import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.Packet3Chat;
-import net.md_5.bungee.protocol.packet.PacketCCSettings;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
+import net.md_5.bungee.protocol.packet.snapshot.ClientSettings;
+import net.md_5.bungee.protocol.snapshot.MinecraftEncoder;
+import net.md_5.bungee.protocol.snapshot.MinecraftDecoder;
+import net.md_5.bungee.protocol.version.Snapshot;
 import net.md_5.bungee.protocol.version.Vanilla;
 import net.md_5.bungee.util.CaseInsensitiveSet;
 
@@ -47,13 +50,14 @@ public final class UserConnection implements ProxiedPlayer
     /*========================================================================*/
     @NonNull
     private final ProxyServer bungee;
+    @Getter
     @NonNull
     private final ChannelWrapper ch;
     @Getter
     @NonNull
     private final String name;
     @Getter
-    private final InitialHandler pendingConnection;
+    private final InitialHandlerAbstract pendingConnection;
     /*========================================================================*/
     @Getter
     @Setter
@@ -89,7 +93,7 @@ public final class UserConnection implements ProxiedPlayer
     private int serverEntityId;
     @Getter
     @Setter
-    private PacketCCSettings settings;
+    private ClientSettings settings;
     @Getter
     private final Scoreboard serverSentScoreboard = new Scoreboard();
     /*========================================================================*/
@@ -195,15 +199,26 @@ public final class UserConnection implements ProxiedPlayer
 
         pendingConnects.add( target );
 
-        ChannelInitializer initializer = new ChannelInitializer()
+        ChannelInitializer<Channel> initializer = new ChannelInitializer<Channel>()
         {
             @Override
             protected void initChannel(Channel ch) throws Exception
             {
-                ch.attr( PipelineUtils.PROTOCOL ).set( Vanilla.fromByte( getPendingConnection().getHandshake().getProtocolVersion() ) );
+                MinecraftProtocol protocol = Vanilla.fromByte( getPendingConnection().getVersion() );
+                ch.attr( PipelineUtils.PROTOCOL ).set( protocol );
 
                 PipelineUtils.BASE.initChannel( ch );
-                ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
+
+                if ( protocol instanceof Snapshot )
+                {
+                    ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Snapshot.HANDSHAKE, false ) );
+                    ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Snapshot.HANDSHAKE, false ) );
+                    ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnectorSnapshot( bungee, UserConnection.this, target ) );
+                } else
+                {
+                    ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
+                }
+
             }
         };
         ChannelFutureListener listener = new ChannelFutureListener()
@@ -359,5 +374,10 @@ public final class UserConnection implements ProxiedPlayer
     public Unsafe unsafe()
     {
         return unsafe;
+    }
+
+    public String getUUID()
+    {
+        return getPendingConnection().getUUID();
     }
 }

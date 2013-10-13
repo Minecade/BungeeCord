@@ -6,9 +6,9 @@ import java.lang.reflect.InvocationTargetException;
 import lombok.Getter;
 import static net.md_5.bungee.protocol.OpCode.*;
 import net.md_5.bungee.protocol.BadPacketException;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.OpCode;
 import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.packet.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Packet0KeepAlive;
 import net.md_5.bungee.protocol.packet.Packet1Login;
 import net.md_5.bungee.protocol.packet.Packet2CEntityProperties;
@@ -29,10 +29,6 @@ import net.md_5.bungee.protocol.packet.PacketFDEncryptionRequest;
 import net.md_5.bungee.protocol.packet.PacketFEPing;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
 import net.md_5.bungee.protocol.skip.PacketReader;
-import net.md_5.bungee.protocol.version.snapshot.Vanilla13w36a;
-import net.md_5.bungee.protocol.version.snapshot.Vanilla13w37b;
-import net.md_5.bungee.protocol.version.snapshot.Vanilla13w38c;
-import net.md_5.bungee.protocol.version.snapshot.Vanilla13w39b;
 
 public class Vanilla implements Protocol
 {
@@ -57,12 +53,8 @@ public class Vanilla implements Protocol
     private final static Vanilla[] protocols = new Vanilla[]
     {
         Vanilla162.getInstance(),     // 74
-        Vanilla13w36a.getInstance(),  // 75
-        Vanilla13w37b.getInstance(),  // 76
-        // 1.6.3                      // 77
         Vanilla.getInstance(),        // 78
-        Vanilla13w38c.getInstance(),  // 79
-        Vanilla13w39b.getInstance(),  // 80
+
     };
 
     public Vanilla()

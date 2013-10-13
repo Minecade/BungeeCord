@@ -8,8 +8,9 @@ import java.io.DataInputStream;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import net.md_5.bungee.protocol.AbstractPacketHandler;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.MinecraftInput;
-import net.md_5.bungee.protocol.MinecraftOutput;
 
 @Getter
 @ToString

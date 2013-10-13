@@ -2,7 +2,6 @@ package net.md_5.bungee.protocol;
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import net.md_5.bungee.protocol.packet.DefinedPacket;
 import net.md_5.bungee.protocol.packet.forge.Forge1Login;
 import net.md_5.bungee.protocol.skip.PacketReader;
 import net.md_5.bungee.protocol.version.Vanilla;

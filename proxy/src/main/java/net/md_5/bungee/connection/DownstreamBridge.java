@@ -4,7 +4,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import java.io.DataInput;
 import java.util.Objects;
-import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.EntityMap;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
@@ -19,9 +18,7 @@ import net.md_5.bungee.api.score.Position;
 import net.md_5.bungee.api.score.Score;
 import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.api.score.Team;
-import net.md_5.bungee.netty.ChannelWrapper;
-import net.md_5.bungee.netty.PacketHandler;
-import net.md_5.bungee.netty.PacketWrapper;
+import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.Packet0KeepAlive;
 import net.md_5.bungee.protocol.packet.PacketC9PlayerListItem;
 import net.md_5.bungee.protocol.packet.PacketCEScoreboardObjective;
@@ -31,43 +28,12 @@ import net.md_5.bungee.protocol.packet.PacketD1Team;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
 
-@RequiredArgsConstructor
-public class DownstreamBridge extends PacketHandler
+public class DownstreamBridge extends DownstreamBridgeAbstract
 {
 
-    private final ProxyServer bungee;
-    private final UserConnection con;
-    private final ServerConnection server;
-
-    @Override
-    public void exception(Throwable t) throws Exception
+    public DownstreamBridge(ProxyServer bungee, UserConnection con, ServerConnection server)
     {
-        ServerInfo def = bungee.getServerInfo( con.getPendingConnection().getListener().getFallbackServer() );
-        if ( server.getInfo() != def )
-        {
-            server.setObsolete( true );
-            con.connectNow( def );
-            con.sendMessage( bungee.getTranslation( "server_went_down" ) );
-        } else
-        {
-            con.disconnect( Util.exception( t ) );
-        }
-    }
-
-    @Override
-    public void disconnected(ChannelWrapper channel) throws Exception
-    {
-        // We lost connection to the server
-        server.getInfo().removePlayer( con );
-        if ( bungee.getReconnectHandler() != null )
-        {
-            bungee.getReconnectHandler().setServer( con );
-        }
-
-        if ( !server.isObsolete() )
-        {
-            con.disconnect( bungee.getTranslation( "lost_connection" ) );
-        }
+        super(bungee, con, server);
     }
 
     @Override
@@ -349,9 +315,4 @@ public class DownstreamBridge extends PacketHandler
         throw new CancelSendSignal();
     }
 
-    @Override
-    public String toString()
-    {
-        return "[" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
-    }
 }

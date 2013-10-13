@@ -1,59 +1,28 @@
 package net.md_5.bungee.connection;
 
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EntityMap;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.ChatEvent;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
-import net.md_5.bungee.netty.ChannelWrapper;
-import net.md_5.bungee.netty.PacketHandler;
-import net.md_5.bungee.netty.PacketWrapper;
+import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.Packet0KeepAlive;
 import net.md_5.bungee.protocol.packet.Packet3Chat;
 import net.md_5.bungee.protocol.packet.PacketCBTabComplete;
 import net.md_5.bungee.protocol.packet.PacketCCSettings;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
+import net.md_5.bungee.protocol.packet.snapshot.ClientSettings;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpstreamBridge extends PacketHandler
+public class UpstreamBridge extends UpstreamBridgeAbstract
 {
-
-    private final ProxyServer bungee;
-    private final UserConnection con;
 
     public UpstreamBridge(ProxyServer bungee, UserConnection con)
     {
-        this.bungee = bungee;
-        this.con = con;
-
-        BungeeCord.getInstance().addConnection( con );
-        con.getTabList().onConnect();
-        con.unsafe().sendPacket( BungeeCord.getInstance().registerChannels() );
-    }
-
-    @Override
-    public void exception(Throwable t) throws Exception
-    {
-        con.disconnect( Util.exception( t ) );
-    }
-
-    @Override
-    public void disconnected(ChannelWrapper channel) throws Exception
-    {
-        // We lost connection to the client
-        PlayerDisconnectEvent event = new PlayerDisconnectEvent( con );
-        bungee.getPluginManager().callEvent( event );
-        con.getTabList().onDisconnect();
-        BungeeCord.getInstance().removeConnection( con );
-
-        if ( con.getServer() != null )
-        {
-            con.getServer().disconnect( "Quitting" );
-        }
+        super(bungee, con);
     }
 
     @Override
@@ -111,7 +80,7 @@ public class UpstreamBridge extends PacketHandler
     @Override
     public void handle(PacketCCSettings settings) throws Exception
     {
-        con.setSettings( settings );
+        con.setSettings( (ClientSettings) Util.translatePacket(con.getCh(), settings) );
     }
 
     @Override
@@ -140,9 +109,4 @@ public class UpstreamBridge extends PacketHandler
         }
     }
 
-    @Override
-    public String toString()
-    {
-        return "[" + con.getName() + "] -> UpstreamBridge";
-    }
 }

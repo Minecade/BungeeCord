@@ -2,10 +2,9 @@ package net.md_5.bungee.protocol;
 
 import io.netty.buffer.ByteBuf;
 import java.lang.reflect.Constructor;
-import net.md_5.bungee.protocol.packet.DefinedPacket;
 import net.md_5.bungee.protocol.skip.PacketReader;
 
-public interface Protocol
+public interface Protocol extends MinecraftProtocol
 {
 
     PacketReader getSkipper();

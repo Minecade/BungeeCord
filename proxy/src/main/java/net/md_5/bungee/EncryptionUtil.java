@@ -17,6 +17,8 @@ import javax.crypto.spec.SecretKeySpec;
 import lombok.Getter;
 import net.md_5.bungee.protocol.packet.PacketFCEncryptionResponse;
 import net.md_5.bungee.protocol.packet.PacketFDEncryptionRequest;
+import net.md_5.bungee.protocol.packet.snapshot.EncryptionRequest;
+import net.md_5.bungee.protocol.packet.snapshot.EncryptionResponse;
 
 /**
  * Class containing all encryption related methods for the proxy.
@@ -81,5 +83,35 @@ public class EncryptionUtil
         Cipher hasher = Cipher.getInstance( "RSA" );
         hasher.init( Cipher.ENCRYPT_MODE, key );
         return hasher.doFinal( b );
+    }
+
+    // The above methods, snapshotified
+    public static EncryptionRequest snapshotEncryptRequest(boolean onlinemode)
+    {
+        String hash = ( onlinemode ) ? Long.toString( random.nextLong(), 16 ) : "-";
+        byte[] pubKey = keys.getPublic().getEncoded();
+        byte[] verify = new byte[ 4 ];
+        random.nextBytes( verify );
+        return new EncryptionRequest( hash, pubKey, verify );
+    }
+
+    public static SecretKey snapshotGetSecret(EncryptionResponse resp, EncryptionRequest request) throws GeneralSecurityException
+    {
+        Cipher cipher = Cipher.getInstance( "RSA" );
+        cipher.init( Cipher.DECRYPT_MODE, keys.getPrivate() );
+        byte[] decrypted = cipher.doFinal( resp.getVerifyToken() );
+
+        if ( !Arrays.equals( request.getVerifyToken(), decrypted ) )
+        {
+            throw new IllegalStateException( "Key pairs do not match!" );
+        }
+
+        cipher.init( Cipher.DECRYPT_MODE, keys.getPrivate() );
+        return new SecretKeySpec( cipher.doFinal( resp.getSharedSecret() ), "AES" );
+    }
+
+    public static PublicKey snapshotGetPubkey(EncryptionRequest request) throws GeneralSecurityException
+    {
+        return KeyFactory.getInstance( "RSA" ).generatePublic( new X509EncodedKeySpec( request.getPublicKey() ) );
     }
 }
