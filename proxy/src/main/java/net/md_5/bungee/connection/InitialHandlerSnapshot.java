@@ -121,6 +121,7 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
 
         bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandlerSnapshot.this, handshake ) );
 
+        // TODO
         if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
         {
             disconnect( bungee.getTranslation( "outdated_server" ) );

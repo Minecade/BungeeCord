@@ -206,6 +206,7 @@ public final class UserConnection implements ProxiedPlayer
             {
                 MinecraftProtocol protocol = Vanilla.fromByte( getPendingConnection().getVersion() );
                 ch.attr( PipelineUtils.PROTOCOL ).set( protocol );
+                System.out.println("Protocol was: " + (protocol instanceof Snapshot) + " " + protocol);
 
                 PipelineUtils.BASE.initChannel( ch );
 

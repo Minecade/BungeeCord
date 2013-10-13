@@ -78,6 +78,11 @@ public enum Snapshot implements MinecraftProtocol
     public final ProtocolDirection TO_SERVER = new ProtocolDirection( "TO_SERVER" );
     public final ProtocolDirection TO_CLIENT = new ProtocolDirection( "TO_CLIENT" );
 
+    public byte getProtocolVersion()
+    {
+        return (byte) PROTOCOL_VERSION;
+    }
+    
     @RequiredArgsConstructor
     public class ProtocolDirection
     {

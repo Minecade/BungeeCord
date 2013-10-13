@@ -1,7 +1,10 @@
 package net.md_5.bungee.protocol;
 
+import com.google.common.base.Charsets;
+
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
@@ -9,33 +12,47 @@ import lombok.NoArgsConstructor;
 public abstract class DefinedPacket
 {
 
-    private int id;
-
-    public int getId()
-    {
-        return id;
-    }
+    @Getter
+    private Integer id;
 
     public void writeString(String s, ByteBuf buf)
     {
         // TODO: Check len - use Guava?
-        buf.writeShort( s.length() );
-        for ( char c : s.toCharArray() )
+        if ( id == null )
         {
-            buf.writeChar( c );
+            byte[] b = s.getBytes( Charsets.UTF_8 );
+            writeVarInt( b.length, buf );
+            buf.writeBytes( b );
+        } else
+        {
+            buf.writeShort( s.length() );
+            for ( char c : s.toCharArray() )
+            {
+                buf.writeChar( c );
+            }
         }
     }
 
     public String readString(ByteBuf buf)
     {
         // TODO: Check len - use Guava?
-        short len = buf.readShort();
-        char[] chars = new char[ len ];
-        for ( int i = 0; i < len; i++ )
+        if ( id == null )
         {
-            chars[i] = buf.readChar();
+            int len = readVarInt( buf );
+            byte[] b = new byte[ len ];
+            buf.readBytes( b );
+
+            return new String( b, Charsets.UTF_8 );
+        } else
+        {
+            short len = buf.readShort();
+            char[] chars = new char[ len ];
+            for ( int i = 0; i < len; i++ )
+            {
+                chars[i] = buf.readChar();
+            }
+            return new String( chars );
         }
-        return new String( chars );
     }
 
     public void writeArray(byte[] b, ByteBuf buf)

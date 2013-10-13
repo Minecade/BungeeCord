@@ -10,7 +10,6 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.BungeeServerInfo;
-import net.md_5.bungee.ServerConnector;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.InitialHandlerSnapshot;
@@ -44,8 +43,10 @@ public class PipelineUtils
                 // return;
             }
 
+            System.out.println("init channel 2");
+
             BASE.initChannel( ch );
-            if ( ch.attr( PROTOCOL ).get() instanceof Snapshot )
+            if ( true )
             {
                 ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Snapshot.HANDSHAKE, true ) );
                 ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Snapshot.HANDSHAKE, true ) );
@@ -86,16 +87,21 @@ public class PipelineUtils
                 // IP_TOS is not supported (Windows XP / Windows Server 2003)
             }
 
+            System.out.println("init channel");
             MinecraftProtocol protocol = ch.attr( PROTOCOL ).get();
             if( protocol == null )
             {
+                System.out.println("Protocol null");
                 protocol = Vanilla.getInstance();
                 ch.attr( PROTOCOL ).set(protocol);
+            } else
+            {
+                System.out.println(protocol instanceof Snapshot);
             }
 
             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
 
-            if ( protocol instanceof Snapshot )
+            if ( true )
             {
                 ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
                 ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );

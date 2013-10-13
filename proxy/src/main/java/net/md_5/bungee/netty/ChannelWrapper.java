@@ -84,6 +84,7 @@ public class ChannelWrapper
 
     public boolean isSnapshot()
     {
+        System.out.println("isSnapshot value: " + isSnapshot + " actual value: " + ( ch.attr( PipelineUtils.PROTOCOL ).get() instanceof Snapshot ));
         if ( this.isSnapshot == null )
         {
             isSnapshot = ( ch.attr( PipelineUtils.PROTOCOL ).get() instanceof Snapshot );

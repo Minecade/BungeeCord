@@ -154,6 +154,7 @@ public class Vanilla implements Protocol
 
     public static Vanilla fromByte(byte version)
     {
+        System.out.println("Checking for " + version);
         for ( Vanilla protocol : protocols )
         {
             if ( protocol.getProtocolVersion() == version )
