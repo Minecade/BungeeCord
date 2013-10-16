@@ -43,13 +43,11 @@ public class PipelineUtils
                 // return;
             }
 
-            System.out.println("init channel 2");
-
             BASE.initChannel( ch );
             if ( true )
             {
-                ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Snapshot.HANDSHAKE, true ) );
-                ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Snapshot.HANDSHAKE, true ) );
+                ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Snapshot.Protocol.HANDSHAKE, true ) );
+                ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Snapshot.Protocol.HANDSHAKE, true ) );
                 ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandlerSnapshot( ProxyServer.getInstance(), ch.attr( LISTENER ).get() ) );
             } else
             {
@@ -87,21 +85,16 @@ public class PipelineUtils
                 // IP_TOS is not supported (Windows XP / Windows Server 2003)
             }
 
-            System.out.println("init channel");
             MinecraftProtocol protocol = ch.attr( PROTOCOL ).get();
             if( protocol == null )
             {
-                System.out.println("Protocol null");
-                protocol = Vanilla.getInstance();
+                protocol = Snapshot.getInstance();
                 ch.attr( PROTOCOL ).set(protocol);
-            } else
-            {
-                System.out.println(protocol instanceof Snapshot);
             }
 
             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
 
-            if ( true )
+            if ( protocol instanceof Snapshot )
             {
                 ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
                 ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );

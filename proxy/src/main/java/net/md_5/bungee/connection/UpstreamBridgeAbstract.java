@@ -47,6 +47,6 @@ public abstract class UpstreamBridgeAbstract extends PacketHandler
     @Override
     public String toString()
     {
-        return "[" + con.getName() + "] -> UpstreamBridge";
+        return "[" + con.getName() + "] -> UpstreamBridge" + (con.getCh().isSnapshot() ? "Snapshot" : "");
     }
 }

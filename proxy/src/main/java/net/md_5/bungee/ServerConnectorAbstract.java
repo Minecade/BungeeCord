@@ -9,7 +9,9 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.connection.InitialHandlerSnapshot;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.PacketHandler;
+import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.version.Snapshot;
+import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 
 @RequiredArgsConstructor
 public abstract class ServerConnectorAbstract extends PacketHandler
@@ -48,13 +50,18 @@ public abstract class ServerConnectorAbstract extends PacketHandler
         out.writeUTF( "Login" );
         out.writeUTF( user.getAddress().getHostString() );
         out.writeInt( user.getAddress().getPort() );
-        // channel.write( new PacketFAPluginMessage( "BungeeCord", out.toByteArray() ) ); TODO - WTF?
+
+        //  TODO - WTF?
+        if ( !channel.isSnapshot())
+        {
+            channel.write( new PacketFAPluginMessage( "BungeeCord", out.toByteArray() ) );
+        }
 
         channel.write( user.getPendingConnection().getHandshake() );
 
         if ( channel.isSnapshot() )
         {
-            channel.setProtocol( Snapshot.LOGIN );
+            channel.setProtocol( Protocol.LOGIN );
             channel.write( ((InitialHandlerSnapshot) user.getPendingConnection()).getLoginRequest() );
         }
         else {

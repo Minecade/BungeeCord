@@ -55,7 +55,7 @@ public class UpstreamBridgeSnapshot extends UpstreamBridgeAbstract
     }
 
     @Override
-    public void handle(TabComplete tabComplete) throws Exception
+    public void handle(TabCompleteRequest tabComplete) throws Exception
     {
         if ( tabComplete.getCursor().startsWith( "/" ) )
         {
@@ -64,7 +64,7 @@ public class UpstreamBridgeSnapshot extends UpstreamBridgeAbstract
 
             if ( !results.isEmpty() )
             {
-                con.unsafe().sendPacket( new TabComplete( results.toArray( new String[ results.size() ] ) ) );
+                con.unsafe().sendPacket( new TabCompleteResponse( results.toArray( new String[ results.size() ] ) ) );
                 throw new CancelSendSignal();
             }
         }

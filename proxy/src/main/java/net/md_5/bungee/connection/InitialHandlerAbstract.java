@@ -112,6 +112,6 @@ public abstract class InitialHandlerAbstract extends PacketHandler implements Pe
     @Override
     public String toString()
     {
-        return "[" + ( ( getName() != null ) ? getName() : getAddress() ) + "] <-> InitialHandler";
+        return "[" + ( ( getName() != null ) ? getName() : getAddress() ) + "] <-> InitialHandler" + (ch.isSnapshot() ? "Snapshot" : "");
     }
 }

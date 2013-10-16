@@ -78,11 +78,13 @@ public class Util
 
     public static DefinedPacket translatePacket( ChannelWrapper channel, DefinedPacket packet )
     {
-        if ( !channel.isSnapshot() )
+        // if it is not snapshot, return the packet
+        // if it is the snapshot and the packet doesn't need to be translated, return the packet
+        if ( !channel.isSnapshot() || packet.getId() == null )
         {
             return packet;
         }
-    
+
         if ( packet instanceof Packet0KeepAlive )
         {
             Packet0KeepAlive old = (Packet0KeepAlive) packet;
@@ -91,7 +93,7 @@ public class Util
         if ( packet instanceof Packet1Login )
         {
             Packet1Login old = (Packet1Login) packet;
-            return new Login(old.getEntityId(), old.getLevelType(), old.getGameMode(), old.getDimension(), old.getDifficulty(), old.getUnused(), old.getMaxPlayers());
+            return new Login(old.getEntityId(), old.getGameMode(), old.getDimension(), old.getDifficulty(), old.getMaxPlayers());
         }
         if ( packet instanceof Packet2Handshake )
         {
@@ -105,18 +107,17 @@ public class Util
         if ( packet instanceof Packet9Respawn )
         {
             Packet9Respawn old = (Packet9Respawn) packet;
-            return new Respawn(old.getDimension(), old.getDifficulty(), old.getGameMode(), old.getWorldHeight(), old.getLevelType());
+            return new Respawn(old.getDimension(), old.getDifficulty(), old.getGameMode());
         }
         if ( packet instanceof PacketC9PlayerListItem )
         {
             PacketC9PlayerListItem old = (PacketC9PlayerListItem) packet;
             return new PlayerListItem(old.getUsername(), old.isOnline(), old.getPing());
-    
+
         }
         if ( packet instanceof PacketCBTabComplete )
         {
-            PacketCBTabComplete old = (PacketCBTabComplete) packet;
-            return new TabComplete(old.getCommands());
+            // can't convert
         }
         if ( packet instanceof PacketCCSettings )
         {
@@ -170,9 +171,9 @@ public class Util
         if ( packet instanceof PacketFFKick )
         {
             PacketFFKick old = (PacketFFKick) packet;
-            return new Kick(old.getMessage());
+            return new Kick(BungeeCord.getInstance().gson.toJson( old.getMessage() ));
         }
-    
+
         throw new RuntimeException("unable to convert packet");
     }
 }

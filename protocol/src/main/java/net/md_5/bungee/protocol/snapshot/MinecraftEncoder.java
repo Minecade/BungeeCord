@@ -2,6 +2,7 @@ package net.md_5.bungee.protocol.snapshot;
 
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.version.Snapshot;
+import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -13,7 +14,7 @@ public class MinecraftEncoder extends MessageToByteEncoder<DefinedPacket>
 {
 
     @Setter
-    private Snapshot protocol;
+    private Protocol protocol;
     private boolean server;
 
     @Override

@@ -6,6 +6,7 @@ import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.snapshot.MinecraftDecoder;
 import net.md_5.bungee.protocol.snapshot.MinecraftEncoder;
 import net.md_5.bungee.protocol.version.Snapshot;
+import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 
 import com.google.common.base.Preconditions;
 import io.netty.channel.Channel;
@@ -84,7 +85,6 @@ public class ChannelWrapper
 
     public boolean isSnapshot()
     {
-        System.out.println("isSnapshot value: " + isSnapshot + " actual value: " + ( ch.attr( PipelineUtils.PROTOCOL ).get() instanceof Snapshot ));
         if ( this.isSnapshot == null )
         {
             isSnapshot = ( ch.attr( PipelineUtils.PROTOCOL ).get() instanceof Snapshot );
@@ -93,7 +93,7 @@ public class ChannelWrapper
         return isSnapshot;
     }
 
-    public void setProtocol(Snapshot protocol) {
+    public void setProtocol(Protocol protocol) {
         ch.pipeline().get( MinecraftDecoder.class ).setProtocol( protocol );
         ch.pipeline().get( MinecraftEncoder.class ).setProtocol( protocol );
     }

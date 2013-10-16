@@ -13,34 +13,28 @@ public class Login extends DefinedPacket
 {
 
     protected int entityId;
-    protected String levelType;
-    protected byte gameMode;
+    protected short gameMode;
     protected int dimension;
-    protected byte difficulty;
-    protected byte unused;
-    protected byte maxPlayers;
+    protected short difficulty;
+    protected short maxPlayers;
 
     @Override
     public void read(ByteBuf buf)
     {
         entityId = buf.readInt();
-        levelType = readString( buf );
-        gameMode = buf.readByte();
+        gameMode = buf.readUnsignedByte();
         dimension = buf.readByte();
         difficulty = buf.readByte();
-        unused = buf.readByte();
-        maxPlayers = buf.readByte();
+        maxPlayers = buf.readUnsignedByte();
     }
 
     @Override
     public void write(ByteBuf buf)
     {
         buf.writeInt( entityId );
-        writeString( levelType, buf );
         buf.writeByte( gameMode );
         buf.writeByte( dimension );
         buf.writeByte( difficulty );
-        buf.writeByte( unused );
         buf.writeByte( maxPlayers );
     }
 

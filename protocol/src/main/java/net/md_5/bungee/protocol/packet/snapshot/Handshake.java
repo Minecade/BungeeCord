@@ -21,8 +21,11 @@ public class Handshake extends DefinedPacket
     public void read(ByteBuf buf)
     {
         protocolVersion = readVarInt( buf );
+        System.out.println( protocolVersion );
         host = readString( buf );
-        port = readVarInt( buf );
+        System.out.println( host );
+        port = buf.readUnsignedShort();
+        System.out.println( port );
         requestedProtocol = readVarInt( buf );
     }
 
@@ -31,7 +34,7 @@ public class Handshake extends DefinedPacket
     {
         writeVarInt( protocolVersion, buf );
         writeString( host, buf );
-        writeVarInt( port, buf );
+        buf.writeShort( port );
         writeVarInt( requestedProtocol, buf );
     }
 

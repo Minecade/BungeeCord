@@ -40,6 +40,7 @@ import net.md_5.bungee.protocol.packet.snapshot.ClientSettings;
 import net.md_5.bungee.protocol.snapshot.MinecraftEncoder;
 import net.md_5.bungee.protocol.snapshot.MinecraftDecoder;
 import net.md_5.bungee.protocol.version.Snapshot;
+import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 import net.md_5.bungee.protocol.version.Vanilla;
 import net.md_5.bungee.util.CaseInsensitiveSet;
 
@@ -204,16 +205,15 @@ public final class UserConnection implements ProxiedPlayer
             @Override
             protected void initChannel(Channel ch) throws Exception
             {
-                MinecraftProtocol protocol = Vanilla.fromByte( getPendingConnection().getVersion() );
+                MinecraftProtocol protocol = getPendingConnection().getCh().getHandle().attr( PipelineUtils.PROTOCOL ).get();
                 ch.attr( PipelineUtils.PROTOCOL ).set( protocol );
-                System.out.println("Protocol was: " + (protocol instanceof Snapshot) + " " + protocol);
 
                 PipelineUtils.BASE.initChannel( ch );
 
                 if ( protocol instanceof Snapshot )
                 {
-                    ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Snapshot.HANDSHAKE, false ) );
-                    ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Snapshot.HANDSHAKE, false ) );
+                    ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false ) );
+                    ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false ) );
                     ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnectorSnapshot( bungee, UserConnection.this, target ) );
                 } else
                 {

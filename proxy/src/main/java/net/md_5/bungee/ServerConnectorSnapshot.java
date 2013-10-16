@@ -1,9 +1,12 @@
 package net.md_5.bungee;
 
+import java.util.Objects;
 import java.util.Queue;
 
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
+import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.score.Objective;
 import net.md_5.bungee.api.score.Scoreboard;
@@ -16,6 +19,7 @@ import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.MinecraftOutput;
 import net.md_5.bungee.protocol.packet.snapshot.*;
 import net.md_5.bungee.protocol.version.Snapshot;
+import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 
 import com.google.common.base.Preconditions;
 
@@ -29,7 +33,7 @@ public class ServerConnectorSnapshot extends ServerConnectorAbstract
     public void handle(LoginSuccess loginSuccess) throws Exception
     {
         Preconditions.checkState( thisState == State.INITIAL, "Not exepcting INITIAL" );
-        ch.setProtocol( Snapshot.GAME );
+        ch.setProtocol( Protocol.GAME );
         thisState = State.LOGIN;
 
         throw new CancelSendSignal();
@@ -73,8 +77,7 @@ public class ServerConnectorSnapshot extends ServerConnectorAbstract
                 user.setServerEntityId( login.getEntityId() );
 
                 // Set tab list size, this sucks balls, TODO: what shall we do about packet mutability
-                Login modLogin = new Login( login.getEntityId(), login.getLevelType(), login.getGameMode(), (byte) login.getDimension(), login.getDifficulty(), login.getUnused(),
-                            (byte) user.getPendingConnection().getListener().getTabListSize() );
+                Login modLogin = new Login( login.getEntityId(), login.getGameMode(), (byte) login.getDimension(), login.getDifficulty(), (byte) user.getPendingConnection().getListener().getTabListSize() );
                 user.unsafe().sendPacket( modLogin );
 
                 MinecraftOutput out = new MinecraftOutput();
@@ -98,7 +101,7 @@ public class ServerConnectorSnapshot extends ServerConnectorAbstract
                 user.sendDimensionSwitch();
 
                 user.setServerEntityId( login.getEntityId() );
-                user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), (short) 256, login.getLevelType() ) );
+                user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode() ) );
 
                 // Remove from old servers
                 user.getServer().setObsolete( true );
@@ -130,4 +133,28 @@ public class ServerConnectorSnapshot extends ServerConnectorAbstract
         throw new CancelSendSignal();
     }
 
+    @Override
+    public void handle(Kick kick) throws Exception
+    {
+        ServerInfo def = bungee.getServerInfo( user.getPendingConnection().getListener().getFallbackServer() );
+        if ( Objects.equals( target, def ) )
+        {
+            def = null;
+        }
+        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( user, kick.getMessage(), def, ServerKickEvent.State.CONNECTING ) );
+        if ( event.isCancelled() && event.getCancelServer() != null )
+        {
+            user.connect( event.getCancelServer() );
+            return;
+        }
+
+        String message = bungee.getTranslation( "connect_kick" ) + target.getName() + ": " + event.getKickReason();
+        if ( user.getServer() == null )
+        {
+            user.disconnect( message );
+        } else
+        {
+            user.sendMessage( message );
+        }
+    }
 }

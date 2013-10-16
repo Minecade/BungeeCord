@@ -33,6 +33,7 @@ import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 import net.md_5.bungee.protocol.packet.snapshot.*;
 import net.md_5.bungee.protocol.version.Snapshot;
+import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 
 public class InitialHandlerSnapshot extends InitialHandlerAbstract implements PendingConnection
 {
@@ -117,11 +118,12 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
         Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
         this.handshake = handshake;
         this.vHost = new InetSocketAddress( handshake.getHost(), handshake.getPort() );
-        bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+        bungee.getLogger().log( Level.INFO, "{0} has connected e", this );
 
         bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandlerSnapshot.this, handshake ) );
 
         // TODO
+        /*
         if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
         {
             disconnect( bungee.getTranslation( "outdated_server" ) );
@@ -129,17 +131,18 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
         {
             disconnect( bungee.getTranslation( "outdated_client" ) );
         }
+        */
 
         switch ( handshake.getRequestedProtocol() )
         {
             case 1:
                 // Ping
                 thisState = State.STATUS;
-                ch.setProtocol( Snapshot.STATUS );
+                ch.setProtocol( Protocol.STATUS );
                 break;
             case 2:
                 thisState = State.USERNAME;
-                ch.setProtocol( Snapshot.LOGIN );
+                ch.setProtocol( Protocol.LOGIN );
                 // Login
                 break;
             default:
@@ -285,7 +288,7 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
                                 UUID = java.util.UUID.randomUUID().toString();
                             }
                             unsafe.sendPacket( new LoginSuccess( UUID, getName() ) );
-                            ch.setProtocol( Snapshot.GAME );
+                            ch.setProtocol( Protocol.GAME );
 
                             UserConnection userCon = new UserConnection( bungee, ch, getName(), InitialHandlerSnapshot.this );
                             userCon.init();
@@ -359,11 +362,5 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
     {
         Preconditions.checkState( thisState == State.HANDSHAKE, "Can only set online mode status whilst handshaking" );
         this.onlineMode = onlineMode;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "[" + ( ( getName() != null ) ? getName() : getAddress() ) + "] <-> InitialHandler";
     }
 }

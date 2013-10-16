@@ -82,7 +82,6 @@ public abstract class AbstractPacketHandler
     {
     }
     
-    // 13w41a and up
    
     // HANDSHAKE
     public void handle(Handshake handshake) throws Exception
@@ -114,8 +113,12 @@ public abstract class AbstractPacketHandler
     {
     }
 
-    public void handle(TabComplete tabComplete) throws Exception
+    public void handle(TabCompleteRequest tabComplete) throws Exception
     {
+    }
+
+    public void handle(TabCompleteResponse tabCompleteResponse) throws Exception
+    {    
     }
 
     public void handle(ClientSettings clientSettings) throws Exception

@@ -1,35 +1,32 @@
 package net.md_5.bungee.protocol.packet.snapshot;
 
-import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
 import io.netty.buffer.ByteBuf;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import net.md_5.bungee.protocol.AbstractPacketHandler;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Respawn extends DefinedPacket
+public class TabCompleteResponse extends DefinedPacket
 {
 
-    private int dimension;
-    private short difficulty;
-    private short gameMode;
+    private String[] commands;
 
     @Override
     public void read(ByteBuf buf)
     {
-        dimension = buf.readInt();
-        difficulty = buf.readUnsignedByte();
-        gameMode = buf.readUnsignedByte();
+        commands = readStringArray( buf );
     }
 
     @Override
     public void write(ByteBuf buf)
     {
-        buf.writeInt( dimension );
-        buf.writeByte( difficulty );
-        buf.writeByte( gameMode );
+        writeStringArray( commands, buf );
     }
 
     @Override

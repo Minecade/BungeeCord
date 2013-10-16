@@ -5,86 +5,28 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.lang.reflect.Constructor;
+
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.protocol.*;
 import net.md_5.bungee.protocol.packet.snapshot.*;
 
-public enum Snapshot implements MinecraftProtocol
+public class Snapshot implements MinecraftProtocol
 {
+    @Getter
+    protected static final Snapshot instance = new Snapshot();
 
-    // -1
-    HANDSHAKE
-    {
-        
-        {
-            TO_SERVER.registerPacket( 0x00, Handshake.class );
-        }
-    },
-    // 0
-    GAME
-    {
-        
-        {
-            TO_CLIENT.registerPacket( 0x00, KeepAlive.class );
-            TO_CLIENT.registerPacket( 0x01, Login.class );
-            TO_CLIENT.registerPacket( 0x02, Chat.class );
-            TO_CLIENT.registerPacket( 0x07, Respawn.class );
-            TO_CLIENT.registerPacket( 0x3B, PlayerListItem.class );
-            TO_CLIENT.registerPacket( 0x3D, TabComplete.class );
-            TO_CLIENT.registerPacket( 0x3E, ScoreboardObjective.class );
-            TO_CLIENT.registerPacket( 0x3F, ScoreboardScore.class );
-            TO_CLIENT.registerPacket( 0x40, ScoreboardDisplay.class );
-            TO_CLIENT.registerPacket( 0x41, Team.class );
-            TO_CLIENT.registerPacket( 0x42, PluginMessage.class );
-            TO_CLIENT.registerPacket( 0x43, Kick.class );
-
-            TO_SERVER.registerPacket( 0x00, KeepAlive.class );
-            TO_SERVER.registerPacket( 0x01, Chat.class );
-            TO_SERVER.registerPacket( 0x14, TabComplete.class );
-            TO_SERVER.registerPacket( 0x15, ClientSettings.class );
-            TO_SERVER.registerPacket( 0x17, PluginMessage.class );
-        }
-    },
-    // 1
-    STATUS
-    {
-        
-        {
-            TO_CLIENT.registerPacket( 0x00, StatusResponse.class );
-            TO_CLIENT.registerPacket( 0x01, PingPacket.class );
-
-            TO_SERVER.registerPacket( 0x00, StatusRequest.class );
-            TO_SERVER.registerPacket( 0x01, PingPacket.class );
-        }
-    },
-    //2
-    LOGIN
-    {
-        
-        {
-            TO_CLIENT.registerPacket( 0x00, Kick.class );
-            TO_CLIENT.registerPacket( 0x01, EncryptionRequest.class );
-            TO_CLIENT.registerPacket( 0x02, LoginSuccess.class );
-
-            TO_SERVER.registerPacket( 0x00, LoginRequest.class );
-            TO_SERVER.registerPacket( 0x01, EncryptionResponse.class );
-        }
-    };
+    @Override
+    public byte getProtocolVersion() {
+        return PROTOCOL_VERSION;
+    }
 
     public static final int MAX_PACKET_ID = 0xFF;
     public static final int PROTOCOL_VERSION = 0x00;
-    public static final String MINECRAFT_VERSION = "13w41a";
+    public static final String MINECRAFT_VERSION = "13w41b";
 
-    public final ProtocolDirection TO_SERVER = new ProtocolDirection( "TO_SERVER" );
-    public final ProtocolDirection TO_CLIENT = new ProtocolDirection( "TO_CLIENT" );
-
-    public byte getProtocolVersion()
-    {
-        return (byte) PROTOCOL_VERSION;
-    }
-    
     @RequiredArgsConstructor
-    public class ProtocolDirection
+    public static class ProtocolDirection
     {
 
         private final String name;
@@ -149,5 +91,71 @@ public enum Snapshot implements MinecraftProtocol
 
             return packetMap.get( packet );
         }
+    }
+    
+    public enum Protocol
+    {
+    
+        // -1
+        HANDSHAKE
+        {
+            
+            {
+                TO_SERVER.registerPacket( 0x00, Handshake.class );
+            }
+        },
+        // 0
+        GAME
+        {
+            
+            {
+                TO_CLIENT.registerPacket( 0x00, KeepAlive.class );
+                TO_CLIENT.registerPacket( 0x01, Login.class );
+                TO_CLIENT.registerPacket( 0x02, Chat.class );
+                TO_CLIENT.registerPacket( 0x07, Respawn.class );
+                TO_CLIENT.registerPacket( 0x38, PlayerListItem.class );
+                TO_CLIENT.registerPacket( 0x3A, TabCompleteResponse.class );
+                TO_CLIENT.registerPacket( 0x3B, ScoreboardObjective.class );
+                TO_CLIENT.registerPacket( 0x3C, ScoreboardScore.class );
+                TO_CLIENT.registerPacket( 0x3D, ScoreboardDisplay.class );
+                TO_CLIENT.registerPacket( 0x3E, Team.class );
+                TO_CLIENT.registerPacket( 0x3F, PluginMessage.class );
+                TO_CLIENT.registerPacket( 0x40, Kick.class );
+    
+                TO_SERVER.registerPacket( 0x00, KeepAlive.class );
+                TO_SERVER.registerPacket( 0x01, Chat.class );
+                TO_SERVER.registerPacket( 0x14, TabCompleteRequest.class );
+                TO_SERVER.registerPacket( 0x15, ClientSettings.class );
+                TO_SERVER.registerPacket( 0x17, PluginMessage.class );
+            }
+        },
+        // 1
+        STATUS
+        {
+            
+            {
+                TO_CLIENT.registerPacket( 0x00, StatusResponse.class );
+                TO_CLIENT.registerPacket( 0x01, PingPacket.class );
+    
+                TO_SERVER.registerPacket( 0x00, StatusRequest.class );
+                TO_SERVER.registerPacket( 0x01, PingPacket.class );
+            }
+        },
+        //2
+        LOGIN
+        {
+            
+            {
+                TO_CLIENT.registerPacket( 0x00, Kick.class );
+                TO_CLIENT.registerPacket( 0x01, EncryptionRequest.class );
+                TO_CLIENT.registerPacket( 0x02, LoginSuccess.class );
+    
+                TO_SERVER.registerPacket( 0x00, LoginRequest.class );
+                TO_SERVER.registerPacket( 0x01, EncryptionResponse.class );
+            }
+        };
+
+        public final ProtocolDirection TO_SERVER = new ProtocolDirection( "TO_SERVER" );
+        public final ProtocolDirection TO_CLIENT = new ProtocolDirection( "TO_CLIENT" );
     }
 }
