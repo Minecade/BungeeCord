@@ -137,9 +137,12 @@ public class Translations {
         addTranslation(new Translation(0x6C, State.GAME, Direction.TO_SERVER, 0x11));
         addTranslation(new Translation(0x82, State.GAME, Direction.TO_CLIENT, 0x33));
         addTranslation(new Translation(0x82, State.GAME, Direction.TO_SERVER, 0x12));
-        // 0x83 to 0x34 - removed first short and converted second short to varint
+        addTranslation(new Translation(0x83, State.GAME, Direction.TO_CLIENT, 0x34, new MapsTranslator()));
+        addTranslation(new Translation(0x84, State.GAME, Direction.TO_CLIENT, 0x35, new UpdateTileEntityTranslator()));
+        addTranslation(new Translation(0x85, State.GAME, Direction.TO_CLIENT, 0x36, new SignEditorOpen()));
+        addTranslation(new Translation(0x86, State.GAME, Direction.TO_CLIENT, 0x37, new StatisticsTranslator()));
         // 0x84 to 0x35 - unsigned byte
-        // 0x85 to 0x35 - remove first argument
+        // 0x85 to 0x36 - remove first argument
         // 0xc8 to 0x37 - array
         addTranslation(new Translation(0xC9, State.GAME, Direction.TO_CLIENT, 0x38));
         addTranslation(new Translation(0xCA, State.GAME, Direction.TO_CLIENT, 0x39));
