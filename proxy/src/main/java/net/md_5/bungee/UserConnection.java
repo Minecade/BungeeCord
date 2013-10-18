@@ -224,11 +224,11 @@ public final class UserConnection implements ProxiedPlayer
             protected void initChannel(Channel ch) throws Exception
             {
                 MinecraftProtocol protocol = getPendingConnection().getCh().getHandle().attr( PipelineUtils.PROTOCOL ).get();
-                ch.attr( PipelineUtils.PROTOCOL ).set( protocol );
+                ch.attr( PipelineUtils.PROTOCOL ).set( Vanilla.getInstance() );
 
-                PipelineUtils.BASE.initChannel( ch );
+                PipelineUtils.BASE.initChannel( ch, false );
 
-                if ( protocol instanceof Snapshot )
+                if ( false )
                 {
                     ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false ) );
                     ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false ) );

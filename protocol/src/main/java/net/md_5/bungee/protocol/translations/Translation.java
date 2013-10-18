@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import lombok.Data;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.OpCode;
+import net.md_5.bungee.protocol.PacketUtil;
 import net.md_5.bungee.protocol.version.Snapshot.Direction;
 
 import com.google.common.base.Preconditions;
@@ -36,7 +37,8 @@ public class Translation {
     public ByteBuf translateToVanilla(ByteBuf in) {
         ByteBuf out = Unpooled.buffer(in.readableBytes());
 
-        int snapshotPacketId = DefinedPacket.readVarInt(in);
+        PacketUtil.readVarInt(in);
+        int snapshotPacketId = PacketUtil.readVarInt(in);
         Preconditions.checkState(snapshotPacketId == this.snapshotPacketId, "Snapshot packet ids to not match (" + snapshotPacketId + " does not match expected " + this.snapshotPacketId + ")");
 
         out.writeByte(vanillaPacketId);
@@ -55,12 +57,16 @@ public class Translation {
         int vanillaPacketId = in.readUnsignedByte();
         Preconditions.checkState(vanillaPacketId == this.vanillaPacketId, "Vanilla packet ids to not match (" + vanillaPacketId + " does not match expected " + this.vanillaPacketId + ")");
 
-        DefinedPacket.writeVarInt(this.snapshotPacketId, out);
+        PacketUtil.writeVarInt(this.snapshotPacketId, out);
         if (translator == null) {
             out.writeBytes(in.readBytes(in.readableBytes()));
         } else {
             translator.vanillaToSnapshot(in, out);
         }
+
+        ByteBuf result = Unpooled.buffer(out.readableBytes());
+        PacketUtil.writeVarInt(out.readableBytes(), result);
+        result.writeBytes(out.readBytes(out.readableBytes()));
 
         return out;
     }

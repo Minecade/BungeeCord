@@ -50,7 +50,7 @@ public class DownstreamBridgeAbstract extends PacketHandler
     @Override
     public String toString()
     {
-        return "[" + con.getName() + "] <-> DownstreamBridge" + (con.getCh().isSnapshot() ? "Snapshot" : "") + " <-> [" + server.getInfo().getName() + "]";
+        return "[" + con.getName() + "] <-> DownstreamBridge" + (server.getCh().isSnapshot() ? "Snapshot" : "") + " <-> [" + server.getInfo().getName() + "]";
     }
 
 }

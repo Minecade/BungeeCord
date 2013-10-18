@@ -17,7 +17,7 @@ import net.md_5.bungee.protocol.version.Snapshot.Direction;
 @RequiredArgsConstructor
 public class ServerConnection implements Server
 {
-
+    @Getter
     private final ChannelWrapper ch;
     @Getter
     private final BungeeServerInfo info;

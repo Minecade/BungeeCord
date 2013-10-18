@@ -67,9 +67,13 @@ public class PipelineUtils
 
     public final static class Base extends ChannelInitializer<Channel>
     {
-
         @Override
         public void initChannel(Channel ch) throws Exception
+        {
+            initChannel(ch, null);
+        }
+
+        public void initChannel(Channel ch, Boolean snapshot) throws Exception
         {
             try
             {
@@ -88,7 +92,7 @@ public class PipelineUtils
 
             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
 
-            if ( protocol instanceof Snapshot )
+            if ( (protocol instanceof Snapshot && snapshot == null) || snapshot )
             {
                 ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
                 ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );

@@ -193,7 +193,7 @@ public class Translations {
         addTranslation(new Translation(0x0E, Direction.TO_SERVER, 0x07));
         addTranslation(new Translation(0x0F, Direction.TO_SERVER, 0x08));
         addTranslation(new Translation(0x10, Direction.TO_SERVER, 0x09));
-        addTranslation(new Translation(0x10, Direction.TO_CLIENT, 0x09));
+        addTranslation(new Translation(0x10, Direction.TO_CLIENT, 0x09, new HeldItemTranslator()));
         addTranslation(new Translation(0x11, Direction.TO_CLIENT, 0x0A, new UseBedTranslator()));
         addTranslation(new Translation(0x12, Direction.TO_SERVER, 0x0A));
         addTranslation(new Translation(0x12, Direction.TO_CLIENT, 0x0B));
