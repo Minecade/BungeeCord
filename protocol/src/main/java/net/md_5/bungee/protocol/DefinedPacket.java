@@ -1,7 +1,5 @@
 package net.md_5.bungee.protocol;
 
-import com.google.common.base.Charsets;
-
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
