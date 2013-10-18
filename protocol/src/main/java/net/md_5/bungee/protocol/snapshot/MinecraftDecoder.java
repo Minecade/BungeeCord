@@ -34,7 +34,7 @@ public class MinecraftDecoder extends ByteToMessageDecoder
         DefinedPacket packet = null;
         if ( prot.hasPacket( packetId ) )
         {
-            packet = prot.createPacket( packetId );
+            packet = prot.createPacket( packetId, copy );
             packet.read( in );
             if ( in.readableBytes() != 0 )
             {
@@ -46,6 +46,6 @@ public class MinecraftDecoder extends ByteToMessageDecoder
             in.skipBytes( in.readableBytes() );
         }
 
-        out.add( new PacketWrapper( packet, copy ) );
+        out.add( new PacketWrapper( packetId, packet, copy, true ) );
     }
 }

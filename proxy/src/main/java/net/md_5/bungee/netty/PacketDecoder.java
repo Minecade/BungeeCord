@@ -37,7 +37,8 @@ public class PacketDecoder extends ReplayingDecoder<Void>
             // Store our start index
             int startIndex = in.readerIndex();
             // Run packet through framer
-            DefinedPacket packet = protocol.read( in.readUnsignedByte(), in );
+            short packetId = in.readUnsignedByte();
+            DefinedPacket packet = protocol.read( packetId, in );
             // If we got this far, it means we have formed a packet, so lets grab the end index
             int endIndex = in.readerIndex();
             // Allocate a buffer big enough for all bytes we have read
@@ -45,7 +46,7 @@ public class PacketDecoder extends ReplayingDecoder<Void>
             // Checkpoint our state incase we don't have enough data for another packet
             checkpoint();
             // Store our decoded message
-            out.add( new PacketWrapper( packet, buf ) );
+            out.add( new PacketWrapper( packetId, packet, buf, false ) );
         }
     }
 }

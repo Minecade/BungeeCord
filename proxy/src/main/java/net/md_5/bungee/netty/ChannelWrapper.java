@@ -53,10 +53,10 @@ public class ChannelWrapper
                 ( (PacketWrapper) packet ).setReleased( true );
                 if ( isSnapshot() )
                 {
-                    ch.write( ( (PacketWrapper) packet).buf, ch.voidPromise() );
+                    ch.write( ( (PacketWrapper) packet).getBufRaw(), ch.voidPromise() );
                 } else
                 {
-                    ch.write( ( (PacketWrapper) packet ).buf );
+                    ch.write( ( (PacketWrapper) packet ).getBufRaw() );
                 }
             } else
             {

@@ -8,6 +8,10 @@ import java.util.Set;
 
 import net.md_5.bungee.protocol.*;
 import net.md_5.bungee.protocol.translations.translators.*;
+import net.md_5.bungee.protocol.version.Snapshot;
+import net.md_5.bungee.protocol.version.Vanilla;
+import net.md_5.bungee.protocol.version.Snapshot.Direction;
+import net.md_5.bungee.protocol.version.Snapshot.ProtocolDirection;
 
 import lombok.Data;
 
@@ -17,10 +21,10 @@ import com.google.common.collect.Sets;
 
 public class Translations {
     private static final Set<Translation> translations = Sets.newHashSet();
-    private static final Map<Integer, Translation> vanilla = Maps.newHashMap();
+    private static final Map<Short, Translation> vanilla = Maps.newHashMap();
     private static final Map<Integer, Translation> serverBound = Maps.newHashMap();
     private static final Map<Integer, Translation> clientBound = Maps.newHashMap();
-
+    
     private static void addTranslation(Translation translation)
     {
         Translation existing = vanilla.get(translation.getVanillaPacketId());
@@ -55,10 +59,50 @@ public class Translations {
     public static Object translate(Object packet) {
         if ( packet instanceof DefinedPacket )
         {
+            DefinedPacket definedPacket = (DefinedPacket) packet;
+            DefinedPacket translatedPacket;
+            Translation translation;
+            ByteBuf translated;
 
+            if ( definedPacket.isSnapshot() )
+            {
+                if ( definedPacket.getDirection() == Direction.TO_CLIENT)
+                {
+                    translation = clientBound.get(definedPacket.getId());
+                } else
+                {
+                    translation = serverBound.get(definedPacket.getId());
+                }
+                
+                translated = translation.translateToVanilla(definedPacket.getBufCopy());
+                translatedPacket = Vanilla.getInstance().read(translation.getVanillaPacketId(), translated);
+            } else
+            {
+                Snapshot.Protocol protocol = Snapshot.Protocol.GAME;
+                translation = vanilla.get(definedPacket.getId());
+                ProtocolDirection direction = translation.getDirection() == Direction.TO_SERVER ? protocol.TO_SERVER : protocol.TO_CLIENT;
+
+                translated = translation.translateToSnapshot(definedPacket.getBufCopy());
+                translatedPacket = direction.createPacket(translation.getSnapshotPacketId(), translated);
+                
+                return translatedPacket;
+            }
+            
+            return translatedPacket;
         } else if ( packet instanceof PacketWrapper )
         {
-
+            PacketWrapper definedWrapper = (PacketWrapper) packet;
+            PacketWrapper translatedWrapper;
+            Translation translation;
+            ByteBuf translated;
+            
+            if ( definedWrapper.isSnapshot() )
+            {
+                // TODO
+            } else
+            {
+                // TODO
+            }
         }
 
         throw new BadPacketException("Failed to translate packet");
@@ -159,14 +203,9 @@ public class Translations {
         addTranslation(new Translation(0xFF, Direction.TO_CLIENT, 0x40)); // TODO - JSON?
     }
 
-    enum Direction {
-        TO_CLIENT,
-        TO_SERVER;
-    }
-
     @Data
     class Translation {
-        private int vanillaPacketId;
+        private short vanillaPacketId;
         private OpCode[] vanillaOpCodes;
         private Direction direction;
         private int snapshotPacketId;
@@ -178,7 +217,7 @@ public class Translations {
         private Translator translator;
 
         public Translation(int vanillaPacketId, Direction direction, int snapshotPacketId) {
-            this.vanillaPacketId = vanillaPacketId;
+            this.vanillaPacketId = (short) vanillaPacketId;
             this.direction = direction;
             this.snapshotPacketId = snapshotPacketId;
         }
@@ -194,8 +233,8 @@ public class Translations {
             int snapshotPacketId = DefinedPacket.readVarInt(in);
             Preconditions.checkState(snapshotPacketId == this.snapshotPacketId, "Snapshot packet ids to not match (" + snapshotPacketId + " does not match expected " + this.snapshotPacketId + ")");
 
+            out.writeByte(vanillaPacketId);
             if (translator == null) {
-                out.writeByte(vanillaPacketId);
                 out.writeBytes(in.readBytes(in.readableBytes()));
             } else {
                 translator.snapshotToVanilla(in, out);
@@ -210,8 +249,8 @@ public class Translations {
             int vanillaPacketId = in.readByte();
             Preconditions.checkState(vanillaPacketId == this.vanillaPacketId, "Vanilla packet ids to not match (" + vanillaPacketId + " does not match expected " + this.vanillaPacketId + ")");
 
+            DefinedPacket.writeVarInt(this.snapshotPacketId, out);
             if (translator == null) {
-                DefinedPacket.writeVarInt(this.snapshotPacketId, out);
                 out.writeBytes(in.readBytes(in.readableBytes()));
             } else {
                 translator.vanillaToSnapshot(in, out);

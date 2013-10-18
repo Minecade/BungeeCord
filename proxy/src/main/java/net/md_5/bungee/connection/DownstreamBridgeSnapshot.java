@@ -35,8 +35,8 @@ public class DownstreamBridgeSnapshot extends DownstreamBridgeAbstract
         if ( !server.isObsolete() )
         {
             // EntityMap.rewrite( packet.buf, con.getServerEntityId(), con.getClientEntityId() );
-            if(packet.packet != null) {
-                System.out.println("Packet " + packet.packet.getClass());
+            if(packet.getPacket() != null) {
+                System.out.println("Packet " + packet.getPacket().getClass());
             } else {
                 System.out.println("Null packet " + packet);
             }

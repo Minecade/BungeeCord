@@ -68,11 +68,11 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
             boolean sendPacket = true;
             try
             {
-                if ( packet.packet != null )
+                if ( packet.getPacket() != null )
                 {
                     try
                     {
-                        packet.packet.handle( handler );
+                        packet.getPacket().handle( handler );
                     } catch ( CancelSendSignal ex )
                     {
                         sendPacket = false;

@@ -1,21 +1,43 @@
 package net.md_5.bungee.protocol;
 
+import net.md_5.bungee.protocol.version.Snapshot.Direction;
 import io.netty.buffer.ByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@AllArgsConstructor
 @NoArgsConstructor
 public abstract class DefinedPacket
 {
 
     @Getter
-    private Integer id;
+    @Setter
+    private Integer id = 0;
+    @Getter
+    @Setter
+    private boolean isSnapshot = false;
+    @Getter
+    @Setter
+    private Direction direction;
+    @Setter
+    private ByteBuf buf;
 
+    public DefinedPacket(int id)
+    {
+        this.id = id;
+    }
+    
+    public ByteBuf getBufRaw()
+    {
+        return this.buf;
+    }
+
+    public ByteBuf getBufCopy()
+    {
+        return this.buf.copy();
+    }
+    
     public void writeString(String s, ByteBuf buf)
     {
-        if ( id == null )
+        if ( isSnapshot() )
         {
             PacketUtil.writeSnapshotString(s, buf);
         } else
@@ -26,7 +48,7 @@ public abstract class DefinedPacket
 
     public String readString(ByteBuf buf)
     {
-        if ( id == null )
+        if ( isSnapshot() )
         {
             return PacketUtil.readSnapshotString(buf);
         } else

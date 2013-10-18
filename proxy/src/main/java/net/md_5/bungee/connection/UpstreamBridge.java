@@ -13,6 +13,7 @@ import net.md_5.bungee.protocol.packet.PacketCBTabComplete;
 import net.md_5.bungee.protocol.packet.PacketCCSettings;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.packet.snapshot.game.ClientSettings;
+import net.md_5.bungee.protocol.translations.Translations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class UpstreamBridge extends UpstreamBridgeAbstract
     @Override
     public void handle(PacketWrapper packet) throws Exception
     {
-        EntityMap.rewrite( packet.buf, con.getClientEntityId(), con.getServerEntityId() );
+        EntityMap.rewrite( packet.getBufRaw(), con.getClientEntityId(), con.getServerEntityId() );
         if ( con.getServer() != null )
         {
             con.getServer().getCh().write( packet );
@@ -80,7 +81,7 @@ public class UpstreamBridge extends UpstreamBridgeAbstract
     @Override
     public void handle(PacketCCSettings settings) throws Exception
     {
-        con.setSettings( (ClientSettings) Util.translatePacket(con.getCh(), settings) );
+        con.setSettings( (ClientSettings) Translations.translate(settings) );
     }
 
     @Override

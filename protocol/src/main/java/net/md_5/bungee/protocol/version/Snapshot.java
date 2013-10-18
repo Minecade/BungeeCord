@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
+import io.netty.buffer.ByteBuf;
+
 import java.lang.reflect.Constructor;
 
 import lombok.Getter;
@@ -29,6 +31,11 @@ public class Snapshot implements MinecraftProtocol
         return PROTOCOL_VERSION;
     }
 
+    public enum Direction {
+        TO_SERVER,
+        TO_CLIENT;
+    }
+    
     public static final int MAX_PACKET_ID = 0xFF;
     public static final int PROTOCOL_VERSION = 0x00;
     public static final String MINECRAFT_VERSION = "13w41b";
@@ -37,7 +44,7 @@ public class Snapshot implements MinecraftProtocol
     public static class ProtocolDirection
     {
 
-        private final String name;
+        private final Direction direction;
         private final TObjectIntMap<Class<? extends DefinedPacket>> packetMap = new TObjectIntHashMap<>( MAX_PACKET_ID );
         private final Class<? extends DefinedPacket>[] packetClasses = new Class[ MAX_PACKET_ID ];
         private final Constructor<? extends DefinedPacket>[] packetConstructors = new Constructor[ MAX_PACKET_ID ];
@@ -50,10 +57,10 @@ public class Snapshot implements MinecraftProtocol
         @Override
         public String toString()
         {
-            return name;
+            return direction.toString();
         }
 
-        public final DefinedPacket createPacket(int id)
+        public final DefinedPacket createPacket(int id, ByteBuf buf)
         {
             if ( id > MAX_PACKET_ID )
             {
@@ -66,7 +73,13 @@ public class Snapshot implements MinecraftProtocol
 
             try
             {
-                return packetClasses[id].newInstance();
+                DefinedPacket newPacket = packetClasses[id].newInstance();
+                newPacket.setId(id);
+                newPacket.setSnapshot(true);
+                newPacket.setDirection(direction);
+                newPacket.setBuf(buf);
+
+                return newPacket;
             } catch ( ReflectiveOperationException ex )
             {
                 throw new BadPacketException( "Could not construct packet with id " + id, ex );
@@ -168,7 +181,7 @@ public class Snapshot implements MinecraftProtocol
             }
         };
 
-        public final ProtocolDirection TO_SERVER = new ProtocolDirection( "TO_SERVER" );
-        public final ProtocolDirection TO_CLIENT = new ProtocolDirection( "TO_CLIENT" );
+        public final ProtocolDirection TO_SERVER = new ProtocolDirection( Direction.TO_SERVER );
+        public final ProtocolDirection TO_CLIENT = new ProtocolDirection( Direction.TO_CLIENT );
     }
 }
