@@ -1,10 +1,13 @@
-package net.md_5.bungee.protocol;
+package net.md_5.bungee.protocol.translations;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.util.Map;
 import java.util.Set;
+
+import net.md_5.bungee.protocol.*;
+import net.md_5.bungee.protocol.translations.translators.*;
 
 import lombok.Data;
 
@@ -64,83 +67,16 @@ public class Translations {
     {
         addTranslation(new Translation(0x00, State.GAME, Direction.TO_CLIENT, 0x00));
         addTranslation(new Translation(0x00, State.GAME, Direction.TO_SERVER, 0x00));
-        addTranslation(new Translation(0x01, State.GAME, Direction.TO_CLIENT, 0x01, new Translator()
-        {
-            void snapshotToVanilla(ByteBuf snapshot, ByteBuf vanilla)
-            {
-                int entity = snapshot.readInt();
-                short gamemode = snapshot.readUnsignedByte();
-                byte dimension = snapshot.readByte();
-                short difficulty = snapshot.readUnsignedByte();
-                short maxPlayers = snapshot.readUnsignedByte();
-                String level = PacketUtil.readSnapshotString(snapshot);
-                
-                vanilla.writeInt(entity);
-                PacketUtil.writeVanillaString(level, vanilla);
-                vanilla.writeByte(gamemode);
-                vanilla.writeByte(dimension);
-                vanilla.writeByte(difficulty);
-                vanilla.writeByte(0);
-                vanilla.writeByte(maxPlayers);
-            }
-
-            void vanillaToSnapshot(ByteBuf vanilla, ByteBuf snapshot)
-            {
-                snapshot.writeInt(vanilla.readInt());
-
-                String level = PacketUtil.readVanillaString(vanilla);
-                
-                snapshot.writeByte(vanilla.readByte());
-                snapshot.writeByte(vanilla.readByte());
-                snapshot.writeByte(vanilla.readByte());
-                vanilla.readByte();
-                snapshot.writeByte(vanilla.readByte());
-                PacketUtil.writeSnapshotString(level, snapshot);
-            }
-        }));
+        addTranslation(new Translation(0x01, State.GAME, Direction.TO_CLIENT, 0x01, new LoginTranslator()));
         // 0x02 - ignore?
-        addTranslation(new Translation(0x03, State.GAME, Direction.TO_CLIENT, 0x02));
+        addTranslation(new Translation(0x03, State.GAME, Direction.TO_CLIENT, 0x02, new ChatTranslator()));
         addTranslation(new Translation(0x03, State.GAME, Direction.TO_SERVER, 0x01));
         addTranslation(new Translation(0x04, State.GAME, Direction.TO_CLIENT, 0x03));
         addTranslation(new Translation(0x05, State.GAME, Direction.TO_CLIENT, 0x04));
         addTranslation(new Translation(0x06, State.GAME, Direction.TO_CLIENT, 0x05));
-        addTranslation(new Translation(0x07, State.GAME, Direction.TO_SERVER, 0x02, new Translator()
-        {
-            void snapshotToVanilla(ByteBuf snapshot, ByteBuf vanilla)
-            {
-                vanilla.writeInt(0);
-                vanilla.writeInt(snapshot.readInt());
-                vanilla.writeBoolean(snapshot.readBoolean());
-            }
-
-            void vanillaToSnapshot(ByteBuf vanilla, ByteBuf snapshot)
-            {
-                vanilla.readInt();
-                snapshot.writeInt(vanilla.readInt());
-                snapshot.writeBoolean(vanilla.readBoolean());
-            }
-        }));
+        addTranslation(new Translation(0x07, State.GAME, Direction.TO_SERVER, 0x02, new UseEntityTranslator()));
         addTranslation(new Translation(0x08, State.GAME, Direction.TO_CLIENT, 0x06));
-        addTranslation(new Translation(0x09, State.GAME, Direction.TO_CLIENT, 0x07, new Translator()
-        {
-            void snapshotToVanilla(ByteBuf snapshot, ByteBuf vanilla)
-            {
-                vanilla.writeInt(snapshot.readInt());
-                vanilla.writeByte(snapshot.readUnsignedByte());
-                vanilla.writeByte(snapshot.readUnsignedByte());
-                vanilla.writeShort(256);
-                PacketUtil.writeVanillaString(PacketUtil.readSnapshotString(snapshot), vanilla);
-            }
-
-            void vanillaToSnapshot(ByteBuf vanilla, ByteBuf snapshot)
-            {
-                snapshot.writeInt(vanilla.readInt());
-                snapshot.writeByte(vanilla.readByte());
-                snapshot.writeByte(vanilla.readByte());
-                vanilla.readShort();
-                PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
-            }
-        }));
+        addTranslation(new Translation(0x09, State.GAME, Direction.TO_CLIENT, 0x07, new RespawnTranslator()));
         addTranslation(new Translation(0x0A, State.GAME, Direction.TO_SERVER, 0x03));
         addTranslation(new Translation(0x0B, State.GAME, Direction.TO_SERVER, 0x04));
         addTranslation(new Translation(0x0C, State.GAME, Direction.TO_SERVER, 0x05));
@@ -150,72 +86,53 @@ public class Translations {
         addTranslation(new Translation(0x0F, State.GAME, Direction.TO_SERVER, 0x08));
         addTranslation(new Translation(0x10, State.GAME, Direction.TO_SERVER, 0x09));
         addTranslation(new Translation(0x10, State.GAME, Direction.TO_CLIENT, 0x09));
-        addTranslation(new Translation(0x11, State.GAME, Direction.TO_CLIENT, 0x0A, new Translator()
-        {
-            void snapshotToVanilla(ByteBuf snapshot, ByteBuf vanilla)
-            {
-                vanilla.writeInt(snapshot.readInt());
-                vanilla.writeByte(0);
-                vanilla.writeInt(snapshot.readInt());
-                vanilla.writeByte(snapshot.readUnsignedByte());
-                vanilla.writeInt(snapshot.readInt());
-            }
-
-            void vanillaToSnapshot(ByteBuf vanilla, ByteBuf snapshot)
-            {
-                snapshot.writeInt(vanilla.readInt());
-                vanilla.readByte();
-                snapshot.writeInt(vanilla.readInt());
-                snapshot.writeByte(vanilla.readByte());
-                snapshot.writeInt(vanilla.readInt());
-            }
-        }));
+        addTranslation(new Translation(0x11, State.GAME, Direction.TO_CLIENT, 0x0A, new UseBedTranslator()));
         addTranslation(new Translation(0x12, State.GAME, Direction.TO_SERVER, 0x0A));
         addTranslation(new Translation(0x12, State.GAME, Direction.TO_CLIENT, 0x0B));
         addTranslation(new Translation(0x13, State.GAME, Direction.TO_SERVER, 0x0B));
-        // 0x14 - varint, add uuid
+        addTranslation(new Translation(0x14, State.GAME, Direction.TO_CLIENT, 0x0C, new SpawnPlayerTranslator()));
         addTranslation(new Translation(0x16, State.GAME, Direction.TO_CLIENT, 0x0D));
-        // 0x17 - varint
-        // 0x18 - varint
-        // 0x19 - varint
-        // 0x1A - varint
+        addTranslation(new Translation(0x17, State.GAME, Direction.TO_CLIENT, 0x0E, new FirstVarIntTranslator()));
+        addTranslation(new Translation(0x18, State.GAME, Direction.TO_CLIENT, 0x0F, new FirstVarIntTranslator()));
+        addTranslation(new Translation(0x19, State.GAME, Direction.TO_CLIENT, 0x10, new PaintingTranslator()));
+        addTranslation(new Translation(0x1A, State.GAME, Direction.TO_CLIENT, 0x11, new FirstVarIntTranslator()));
         addTranslation(new Translation(0x1B, State.GAME, Direction.TO_SERVER, 0x0C));
-        addTranslation(new Translation(0x1C, State.GAME, Direction.TO_CLIENT, 0x12)); // varint?
+        addTranslation(new Translation(0x1C, State.GAME, Direction.TO_CLIENT, 0x12));
         addTranslation(new Translation(0x1D, State.GAME, Direction.TO_CLIENT, 0x13));
-        addTranslation(new Translation(0x1E, State.GAME, Direction.TO_CLIENT, 0x14)); // varint?
-        addTranslation(new Translation(0x1F, State.GAME, Direction.TO_CLIENT, 0x15)); // varint?
-        addTranslation(new Translation(0x20, State.GAME, Direction.TO_CLIENT, 0x16)); // varint?
-        addTranslation(new Translation(0x21, State.GAME, Direction.TO_CLIENT, 0x17)); // varint?
-        addTranslation(new Translation(0x22, State.GAME, Direction.TO_CLIENT, 0x18)); // varint?
-        addTranslation(new Translation(0x23, State.GAME, Direction.TO_CLIENT, 0x19)); // varint?
-        addTranslation(new Translation(0x26, State.GAME, Direction.TO_CLIENT, 0x1A)); // varint?
+        addTranslation(new Translation(0x1E, State.GAME, Direction.TO_CLIENT, 0x14));
+        addTranslation(new Translation(0x1F, State.GAME, Direction.TO_CLIENT, 0x15));
+        addTranslation(new Translation(0x20, State.GAME, Direction.TO_CLIENT, 0x16));
+        addTranslation(new Translation(0x21, State.GAME, Direction.TO_CLIENT, 0x17));
+        addTranslation(new Translation(0x22, State.GAME, Direction.TO_CLIENT, 0x18));
+        addTranslation(new Translation(0x23, State.GAME, Direction.TO_CLIENT, 0x19));
+        addTranslation(new Translation(0x26, State.GAME, Direction.TO_CLIENT, 0x1A));
         addTranslation(new Translation(0x27, State.GAME, Direction.TO_CLIENT, 0x1B));
         addTranslation(new Translation(0x28, State.GAME, Direction.TO_CLIENT, 0x1C));
         addTranslation(new Translation(0x29, State.GAME, Direction.TO_CLIENT, 0x1D));
         addTranslation(new Translation(0x2A, State.GAME, Direction.TO_CLIENT, 0x1E));
-        addTranslation(new Translation(0x1F, State.GAME, Direction.TO_CLIENT, 0x2B));
-        addTranslation(new Translation(0x2C, State.GAME, Direction.TO_CLIENT, 0x20)); // varint?
+        addTranslation(new Translation(0x2B, State.GAME, Direction.TO_CLIENT, 0x1F));
+        addTranslation(new Translation(0x2C, State.GAME, Direction.TO_CLIENT, 0x20, new EntityPropertiesTranslator()));
         addTranslation(new Translation(0x33, State.GAME, Direction.TO_CLIENT, 0x21));
-        // 0x34 to 0x22 - chunk coordinates to varints
-        // 0x35 to 0x23 - unsinged byte y & metadata, varint block type
-        // 0x36 to 0x24 - unsignged bytes and varint
-        // 0x37 to 0x25 - first int to varint
+        addTranslation(new Translation(0x34, State.GAME, Direction.TO_CLIENT, 0x22, new MultiBlockChangeTranslator()));
+        addTranslation(new Translation(0x35, State.GAME, Direction.TO_CLIENT, 0x23, new BlockChangeTranslator()));
+        addTranslation(new Translation(0x36, State.GAME, Direction.TO_CLIENT, 0x24, new BlockActionTranslator()));
+        addTranslation(new Translation(0x37, State.GAME, Direction.TO_CLIENT, 0x25, new FirstVarIntTranslator()));
         addTranslation(new Translation(0x38, State.GAME, Direction.TO_CLIENT, 0x26));
-        // 0x3C to 0x27 - doubles are now floats
-        // 0x3D - ??
-        // 0x3E - ??
+        addTranslation(new Translation(0x3C, State.GAME, Direction.TO_CLIENT, 0x27, new ExplosionTranslator()));
+        addTranslation(new Translation(0x3D, State.GAME, Direction.TO_CLIENT, 0x28));
+        addTranslation(new Translation(0x3E, State.GAME, Direction.TO_CLIENT, 0x29, new SoundEffectTranslator()));
         addTranslation(new Translation(0x3F, State.GAME, Direction.TO_CLIENT, 0x2A));
-        // 0x46 to 0x2B - new data types
-        // 0x47 to 0x2C - varint
-        // 0x64 to 0x2D - bytes -> unsigned
-        addTranslation(new Translation(0x65, State.GAME, Direction.TO_SERVER, 0x0D));
-        // 0x65 to 2E - unsigned byte when client bound?
+        addTranslation(new Translation(0x46, State.GAME, Direction.TO_CLIENT, 0x2B, new ChangeGameStateTranslator()));
+        addTranslation(new Translation(0x47, State.GAME, Direction.TO_CLIENT, 0x2C, new FirstVarIntTranslator()));
+        addTranslation(new Translation(0x64, State.GAME, Direction.TO_CLIENT, 0x2D, new OpenWindowTranslator()));
+        addTranslation(new Translation(0x65, State.GAME, Direction.TO_CLIENT, 0x2E, new CloseWindowTranslator()));
+        addTranslation(new Translation(0x65, State.GAME, Direction.TO_SERVER, 0x0D, new CloseWindowTranslator()));
         addTranslation(new Translation(0x66, State.GAME, Direction.TO_SERVER, 0x0E));
-        // 0x67 to 0x2F - unsigned byte
-        // 0x68 to 0x30 - unsigned byte
-        // 0x69 to 0x31 - unsigned byte
-        addTranslation(new Translation(0x6A, State.GAME, Direction.TO_SERVER, 0x0F));
-        // 0x6A to 0x32 - unsigned byte
+        addTranslation(new Translation(0x67, State.GAME, Direction.TO_CLIENT, 0x2F, new FirstUnsignedByteTranslator()));
+        addTranslation(new Translation(0x68, State.GAME, Direction.TO_CLIENT, 0x30, new FirstUnsignedByteTranslator()));
+        addTranslation(new Translation(0x69, State.GAME, Direction.TO_CLIENT, 0x31, new FirstUnsignedByteTranslator()));
+        addTranslation(new Translation(0x6A, State.GAME, Direction.TO_CLIENT, 0x32, new FirstUnsignedByteTranslator()));
+        addTranslation(new Translation(0x6A, State.GAME, Direction.TO_SERVER, 0x0F, new FirstUnsignedByteTranslator()));        
         addTranslation(new Translation(0x6B, State.GAME, Direction.TO_SERVER, 0x10));
         addTranslation(new Translation(0x6C, State.GAME, Direction.TO_SERVER, 0x11));
         addTranslation(new Translation(0x82, State.GAME, Direction.TO_CLIENT, 0x33));
@@ -252,12 +169,6 @@ public class Translations {
     enum Direction {
         TO_CLIENT,
         TO_SERVER;
-    }
-    
-    abstract class Translator {
-        abstract void snapshotToVanilla(ByteBuf snapshot, ByteBuf vanilla);
-        
-        abstract void vanillaToSnapshot(ByteBuf vanilla, ByteBuf snapshot);
     }
     
     @Data
