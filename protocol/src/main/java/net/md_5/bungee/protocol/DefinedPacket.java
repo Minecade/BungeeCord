@@ -25,21 +25,19 @@ public abstract class DefinedPacket
     {
         this.id = id;
     }
-    
+
     public ByteBuf getBufCopy()
     {
         return this.buf.copy();
     }
-    
+
     public void writeString(String s, ByteBuf buf)
     {
         if ( isSnapshot() )
         {
-            System.out.println("Snapshot string");
             PacketUtil.writeSnapshotString(s, buf);
         } else
         {
-            System.out.println("Vanilla string");
             PacketUtil.writeVanillaString(s, buf);
         }
     }

@@ -45,6 +45,8 @@ public class ServerConnector extends ServerConnectorAbstract
     {
         Preconditions.checkState( thisState == State.LOGIN, "Not exepcting LOGIN" );
 
+        System.out.println("Got login");
+
         ServerConnection server = new ServerConnection( ch, target );
         ServerConnectedEvent event = new ServerConnectedEvent( user, server );
         bungee.getPluginManager().callEvent( event );

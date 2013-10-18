@@ -1,6 +1,7 @@
 package net.md_5.bungee.protocol.translations;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import java.util.List;
 import java.util.Map;
@@ -19,15 +20,16 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class Translations {
+    private static boolean init = false;
     private static final Set<Translation> translations = Sets.newHashSet();
     private static final Map<Short, List<Translation>> vanilla = Maps.newHashMap();
     private static final Map<Integer, Translation> serverBound = Maps.newHashMap();
     private static final Map<Integer, Translation> clientBound = Maps.newHashMap();
-    
+
     private static void addTranslation(Translation translation)
     {
         List<Translation> existingVanilla = vanilla.get(translation.getVanillaPacketId());
-        
+
         if ( existingVanilla == null)
         {
             existingVanilla = Lists.newArrayList();
@@ -36,7 +38,7 @@ public class Translations {
         {
             throw new RuntimeException("Duplicate vanilla packet going the same way " + translation.toString());
         }
-        
+
         Translation existingSnapshot;
         if ( translation.getDirection() == Direction.TO_CLIENT )
         {
@@ -66,9 +68,11 @@ public class Translations {
     {
         return translate(packet, null);
     }
-    
+
     public static Object translate(Object packet, Direction direction)
     {
+        setupTranslations();
+
         Translation translation;
         ByteBuf translated;
 
@@ -92,8 +96,12 @@ public class Translations {
                 {
                     throw new RuntimeException("Invalid direction " + definedPacket.getDirection());
                 }
-                
-                translated = translation.translateToVanilla(definedPacket.getBufCopy());
+
+                ByteBuf newBuffer = Unpooled.buffer();
+                newBuffer.writeByte(definedPacket.getId());
+                definedPacket.write(newBuffer);
+
+                translated = translation.translateToVanilla(newBuffer);
                 translatedPacket = Vanilla.getInstance().read(translation.getVanillaPacketId(), translated);
                 newPacketId = translation.getVanillaPacketId();
             } else
@@ -102,13 +110,17 @@ public class Translations {
                 // create a snapshot packet from a vanilla packet
                 Snapshot.Protocol protocol = Snapshot.Protocol.GAME;
                 ProtocolDirection protocolDirection = protocol.getProtocolDirection(direction);
-                translation = vanilla.get(definedPacket.getId()).get(direction == Direction.TO_CLIENT ? 0 : 1);
+                translation = vanilla.get((short) (int) definedPacket.getId()).get(direction == Direction.TO_CLIENT ? 0 : 1);
 
-                translated = translation.translateToSnapshot(definedPacket.getBufCopy());
+                ByteBuf newBuffer = Unpooled.buffer();
+                newBuffer.writeByte(definedPacket.getId());
+                definedPacket.write(newBuffer);
+
+                translated = translation.translateToSnapshot(newBuffer);
                 translatedPacket = protocolDirection.createPacket(translation.getSnapshotPacketId(), translated);
                 newPacketId = translation.getSnapshotPacketId();
             }
-            
+
             // if there isn't a defined packet for the translation, return a packet wrapper
             if ( translatedPacket == null )
             {
@@ -122,7 +134,7 @@ public class Translations {
         {
             PacketWrapper definedWrapper = (PacketWrapper) packet;
             PacketWrapper translatedWrapper;
-            
+
             if ( definedWrapper.isSnapshot() )
             {
                 System.out.println("Translating a snapshot wrapper to vanilla (" + definedWrapper.getDirection() + ")");
@@ -143,26 +155,30 @@ public class Translations {
             {
                 System.out.println("Translating a vanilla wrapper to snapshot (" + direction + ")");
                 Preconditions.checkState(direction != null, "direction can not be null when translating a vanilla packet");
-                translation = vanilla.get(definedWrapper.getPacketId()).get(direction == Direction.TO_CLIENT ? 0 : 1);
+                translation = vanilla.get((short) (int) definedWrapper.getPacketId()).get(direction == Direction.TO_CLIENT ? 0 : 1);
 
                 translated = translation.translateToSnapshot(definedWrapper.getBufCopy());
                 translatedWrapper = new PacketWrapper(translation.getSnapshotPacketId(), null, translated, true);
                 translatedWrapper.setDirection(direction);
             }
-            
+
             return translatedWrapper;
         }
 
         throw new BadPacketException("Failed to translate packet " + packet.getClass() + " " + packet.toString());
     }
 
+    private static void setupTranslations()
     {
+        if(init) return;
+        init = true;
+
         addTranslation(new Translation(0x00, Direction.TO_CLIENT, 0x00));
         addTranslation(new Translation(0x00, Direction.TO_SERVER, 0x00));
         addTranslation(new Translation(0x01, Direction.TO_CLIENT, 0x01, new LoginTranslator()));
-        // 0x02 - ignore?
-        addTranslation(new Translation(0x03, Direction.TO_CLIENT, 0x02, new ChatTranslator()));
-        addTranslation(new Translation(0x03, Direction.TO_SERVER, 0x01));
+        // TODO - 0x02 - ignore?
+        addTranslation(new Translation(0x03, Direction.TO_CLIENT, 0x02, new FirstStringTranslator()));
+        addTranslation(new Translation(0x03, Direction.TO_SERVER, 0x01, new FirstStringTranslator()));
         addTranslation(new Translation(0x04, Direction.TO_CLIENT, 0x03));
         addTranslation(new Translation(0x05, Direction.TO_CLIENT, 0x04));
         addTranslation(new Translation(0x06, Direction.TO_CLIENT, 0x05));
@@ -213,7 +229,7 @@ public class Translations {
         addTranslation(new Translation(0x3C, Direction.TO_CLIENT, 0x27, new ExplosionTranslator()));
         addTranslation(new Translation(0x3D, Direction.TO_CLIENT, 0x28));
         addTranslation(new Translation(0x3E, Direction.TO_CLIENT, 0x29, new SoundEffectTranslator()));
-        addTranslation(new Translation(0x3F, Direction.TO_CLIENT, 0x2A));
+        addTranslation(new Translation(0x3F, Direction.TO_CLIENT, 0x2A, new FirstStringTranslator()));
         addTranslation(new Translation(0x46, Direction.TO_CLIENT, 0x2B, new ChangeGameStateTranslator()));
         addTranslation(new Translation(0x47, Direction.TO_CLIENT, 0x2C, new FirstVarIntTranslator()));
         addTranslation(new Translation(0x64, Direction.TO_CLIENT, 0x2D, new OpenWindowTranslator()));
@@ -228,26 +244,24 @@ public class Translations {
         addTranslation(new Translation(0x6B, Direction.TO_SERVER, 0x10));
         addTranslation(new Translation(0x6C, Direction.TO_SERVER, 0x11));
         addTranslation(new Translation(0x82, Direction.TO_CLIENT, 0x33));
-        addTranslation(new Translation(0x82, Direction.TO_SERVER, 0x12));
+        addTranslation(new Translation(0x82, Direction.TO_SERVER, 0x12, new UpdateSignTranslator()));
         addTranslation(new Translation(0x83, Direction.TO_CLIENT, 0x34, new MapsTranslator()));
         addTranslation(new Translation(0x84, Direction.TO_CLIENT, 0x35, new UpdateTileEntityTranslator()));
         addTranslation(new Translation(0x85, Direction.TO_CLIENT, 0x36, new SignEditorOpen()));
         addTranslation(new Translation(0xC8, Direction.TO_CLIENT, 0x37, new StatisticsTranslator()));
-        addTranslation(new Translation(0xC9, Direction.TO_CLIENT, 0x38));
+        addTranslation(new Translation(0xC9, Direction.TO_CLIENT, 0x38, new FirstStringTranslator()));
         addTranslation(new Translation(0xCA, Direction.TO_CLIENT, 0x39));
         addTranslation(new Translation(0xCA, Direction.TO_SERVER, 0x13));
         addTranslation(new Translation(0xCB, Direction.TO_CLIENT, 0x3A, new TabCompleteResponseTranslator()));
-        addTranslation(new Translation(0xCB, Direction.TO_SERVER, 0x14));
+        addTranslation(new Translation(0xCB, Direction.TO_SERVER, 0x14, new FirstStringTranslator()));
         addTranslation(new Translation(0xCC, Direction.TO_SERVER, 0x15, new ClientSettingsTranslator()));
         addTranslation(new Translation(0xCD, Direction.TO_SERVER, 0x16));
-        addTranslation(new Translation(0xCE, Direction.TO_CLIENT, 0x3B));
-        addTranslation(new Translation(0x3F, Direction.TO_CLIENT, 0x2A));
-        addTranslation(new Translation(0xCF, Direction.TO_CLIENT, 0x3C));
-        addTranslation(new Translation(0xD0, Direction.TO_CLIENT, 0x3D));
-        addTranslation(new Translation(0xD1, Direction.TO_CLIENT, 0x3E));
-        addTranslation(new Translation(0x3F, Direction.TO_CLIENT, 0x2A));
-        addTranslation(new Translation(0xFA, Direction.TO_CLIENT, 0x3F));
-        addTranslation(new Translation(0xFA, Direction.TO_SERVER, 0x17));
-        addTranslation(new Translation(0xFF, Direction.TO_CLIENT, 0x40)); // TODO - JSON?
+        addTranslation(new Translation(0xCE, Direction.TO_CLIENT, 0x3B, new ScoreboardObjectiveTranslator()));
+        addTranslation(new Translation(0xCF, Direction.TO_CLIENT, 0x3C, new ScoreboardScoreTranslator()));
+        addTranslation(new Translation(0xD0, Direction.TO_CLIENT, 0x3D, new ScoreboardDisplayTranslator()));
+        addTranslation(new Translation(0xD1, Direction.TO_CLIENT, 0x3E, new ScoreboardTeamsTranslator()));
+        addTranslation(new Translation(0xFA, Direction.TO_CLIENT, 0x3F, new FirstStringTranslator()));
+        addTranslation(new Translation(0xFA, Direction.TO_SERVER, 0x17, new FirstStringTranslator()));
+        addTranslation(new Translation(0xFF, Direction.TO_CLIENT, 0x40, new FirstStringTranslator())); // TODO - JSON?
     }
 }

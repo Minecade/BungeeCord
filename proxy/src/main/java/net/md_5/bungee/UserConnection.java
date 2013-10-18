@@ -108,7 +108,7 @@ public final class UserConnection implements ProxiedPlayer
         @Override
         public void sendPacket(DefinedPacket packet)
         {
-            System.out.println("Sending definedPacket to user. Channel Snapshot: " + ch.isSnapshot() + " - Packet Snapshot: " + packet.isSnapshot());
+            System.out.println("Sending " + packet.getClass() + " to user. Channel Snapshot: " + ch.isSnapshot() + " - Packet Snapshot: " + packet.isSnapshot());
             if ( ch.isSnapshot() )
             {
                 Object newPacket = Translations.translate(packet, Direction.TO_CLIENT);

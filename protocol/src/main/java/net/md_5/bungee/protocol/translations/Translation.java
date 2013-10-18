@@ -52,7 +52,7 @@ public class Translation {
     public ByteBuf translateToSnapshot(ByteBuf in) {
         ByteBuf out = Unpooled.buffer(in.readableBytes());
 
-        int vanillaPacketId = in.readByte();
+        int vanillaPacketId = in.readUnsignedByte();
         Preconditions.checkState(vanillaPacketId == this.vanillaPacketId, "Vanilla packet ids to not match (" + vanillaPacketId + " does not match expected " + this.vanillaPacketId + ")");
 
         DefinedPacket.writeVarInt(this.snapshotPacketId, out);

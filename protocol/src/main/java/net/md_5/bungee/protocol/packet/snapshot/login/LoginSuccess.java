@@ -21,6 +21,7 @@ public class LoginSuccess extends DefinedPacket
 
     public LoginSuccess(String uuid, String username)
     {
+        this();
         this.uuid = uuid;
         this.username = username;
     }
