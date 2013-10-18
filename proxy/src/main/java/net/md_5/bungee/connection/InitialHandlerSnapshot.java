@@ -32,6 +32,17 @@ import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.event.PlayerHandshakeEvent;
 import net.md_5.bungee.protocol.packet.snapshot.*;
+import net.md_5.bungee.protocol.packet.snapshot.game.Kick;
+import net.md_5.bungee.protocol.packet.snapshot.game.Login;
+import net.md_5.bungee.protocol.packet.snapshot.game.PingPacket;
+import net.md_5.bungee.protocol.packet.snapshot.game.PluginMessage;
+import net.md_5.bungee.protocol.packet.snapshot.handshake.Handshake;
+import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionRequest;
+import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionResponse;
+import net.md_5.bungee.protocol.packet.snapshot.login.LoginRequest;
+import net.md_5.bungee.protocol.packet.snapshot.login.LoginSuccess;
+import net.md_5.bungee.protocol.packet.snapshot.status.StatusRequest;
+import net.md_5.bungee.protocol.packet.snapshot.status.StatusResponse;
 import net.md_5.bungee.protocol.version.Snapshot;
 import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 

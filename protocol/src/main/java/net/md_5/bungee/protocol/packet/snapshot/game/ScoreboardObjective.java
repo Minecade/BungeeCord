@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.packet.snapshot;
+package net.md_5.bungee.protocol.packet.snapshot.game;
 
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -9,27 +9,30 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class ScoreboardDisplay extends DefinedPacket
+public class ScoreboardObjective extends DefinedPacket
 {
 
-    /**
-     * 0 = list, 1 = side, 2 = below.
-     */
-    private byte position;
     private String name;
+    private String text;
+    /**
+     * 0 to create, 1 to remove.
+     */
+    private byte action;
 
     @Override
     public void read(ByteBuf buf)
     {
-        position = buf.readByte();
         name = readString( buf );
+        text = readString( buf );
+        action = buf.readByte();
     }
 
     @Override
     public void write(ByteBuf buf)
     {
-        buf.writeByte( position );
         writeString( name, buf );
+        writeString( text, buf );
+        buf.writeByte( action );
     }
 
     @Override

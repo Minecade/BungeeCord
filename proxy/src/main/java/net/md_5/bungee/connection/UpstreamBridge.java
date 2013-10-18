@@ -12,7 +12,7 @@ import net.md_5.bungee.protocol.packet.Packet3Chat;
 import net.md_5.bungee.protocol.packet.PacketCBTabComplete;
 import net.md_5.bungee.protocol.packet.PacketCCSettings;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
-import net.md_5.bungee.protocol.packet.snapshot.ClientSettings;
+import net.md_5.bungee.protocol.packet.snapshot.game.ClientSettings;
 
 import java.util.ArrayList;
 import java.util.List;

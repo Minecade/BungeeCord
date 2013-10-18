@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.packet.snapshot;
+package net.md_5.bungee.protocol.packet.snapshot.game;
 
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -9,21 +9,21 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class ClientStatus extends DefinedPacket
+public class Kick extends DefinedPacket
 {
 
-    private byte payload;
+    private String message;
 
     @Override
     public void read(ByteBuf buf)
     {
-        payload = buf.readByte();
+        message = readString( buf );
     }
 
     @Override
     public void write(ByteBuf buf)
     {
-        buf.writeByte( payload );
+        writeString( message, buf );
     }
 
     @Override

@@ -10,6 +10,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.protocol.*;
 import net.md_5.bungee.protocol.packet.snapshot.*;
+import net.md_5.bungee.protocol.packet.snapshot.game.*;
+import net.md_5.bungee.protocol.packet.snapshot.handshake.Handshake;
+import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionRequest;
+import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionResponse;
+import net.md_5.bungee.protocol.packet.snapshot.login.LoginRequest;
+import net.md_5.bungee.protocol.packet.snapshot.login.LoginSuccess;
+import net.md_5.bungee.protocol.packet.snapshot.status.StatusRequest;
+import net.md_5.bungee.protocol.packet.snapshot.status.StatusResponse;
 
 public class Snapshot implements MinecraftProtocol
 {
@@ -76,6 +84,11 @@ public class Snapshot implements MinecraftProtocol
             }
             packetClasses[id] = packetClass;
             packetMap.put( packetClass, id );
+        }
+        
+        protected final void registerPacket(int id, OpCode[] codes)
+        {
+            
         }
 
         protected final void unregisterPacket(int id)

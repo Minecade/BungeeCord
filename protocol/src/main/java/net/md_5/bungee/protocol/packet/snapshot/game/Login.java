@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.packet.snapshot;
+package net.md_5.bungee.protocol.packet.snapshot.game;
 
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -9,27 +9,33 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Respawn extends DefinedPacket
+public class Login extends DefinedPacket
 {
 
-    private int dimension;
-    private short difficulty;
-    private short gameMode;
+    protected int entityId;
+    protected short gameMode;
+    protected int dimension;
+    protected short difficulty;
+    protected short maxPlayers;
 
     @Override
     public void read(ByteBuf buf)
     {
-        dimension = buf.readInt();
-        difficulty = buf.readUnsignedByte();
+        entityId = buf.readInt();
         gameMode = buf.readUnsignedByte();
+        dimension = buf.readByte();
+        difficulty = buf.readByte();
+        maxPlayers = buf.readUnsignedByte();
     }
 
     @Override
     public void write(ByteBuf buf)
     {
-        buf.writeInt( dimension );
-        buf.writeByte( difficulty );
+        buf.writeInt( entityId );
         buf.writeByte( gameMode );
+        buf.writeByte( dimension );
+        buf.writeByte( difficulty );
+        buf.writeByte( maxPlayers );
     }
 
     @Override

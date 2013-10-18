@@ -18,6 +18,8 @@ import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.MinecraftOutput;
 import net.md_5.bungee.protocol.packet.snapshot.*;
+import net.md_5.bungee.protocol.packet.snapshot.game.*;
+import net.md_5.bungee.protocol.packet.snapshot.login.LoginSuccess;
 import net.md_5.bungee.protocol.version.Snapshot;
 import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 
@@ -94,7 +96,7 @@ public class ServerConnectorSnapshot extends ServerConnectorAbstract
                 }
                 for ( Team team : serverScoreboard.getTeams() )
                 {
-                    user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.snapshot.Team( team.getName() ) );
+                    user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.snapshot.game.Team( team.getName() ) );
                 }
                 serverScoreboard.clear();
 

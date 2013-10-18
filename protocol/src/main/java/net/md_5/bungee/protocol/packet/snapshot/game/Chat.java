@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.packet.snapshot;
+package net.md_5.bungee.protocol.packet.snapshot.game;
 
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -9,24 +9,21 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class EncryptionResponse extends DefinedPacket
+public class Chat extends DefinedPacket
 {
 
-    private byte[] sharedSecret;
-    private byte[] verifyToken;
+    private String message;
 
     @Override
     public void read(ByteBuf buf)
     {
-        sharedSecret = readArray( buf );
-        verifyToken = readArray( buf );
+        message = readString( buf );
     }
 
     @Override
     public void write(ByteBuf buf)
     {
-        writeArray( sharedSecret, buf );
-        writeArray( verifyToken, buf );
+        writeString( message, buf );
     }
 
     @Override

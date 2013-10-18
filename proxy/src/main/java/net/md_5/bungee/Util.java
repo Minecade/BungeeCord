@@ -7,6 +7,9 @@ import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.snapshot.*;
+import net.md_5.bungee.protocol.packet.snapshot.game.*;
+import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionRequest;
+import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionResponse;
 
 /**
  * Series of utility classes to perform various operations.
@@ -74,106 +77,5 @@ public class Util
         }
 
         return ( ret.length() == 0 ) ? "" : ret.substring( 0, ret.length() - separators.length() );
-    }
-
-    public static DefinedPacket translatePacket( ChannelWrapper channel, DefinedPacket packet )
-    {
-        // if it is not snapshot, return the packet
-        // if it is the snapshot and the packet doesn't need to be translated, return the packet
-        if ( !channel.isSnapshot() || packet.getId() == null )
-        {
-            return packet;
-        }
-
-        if ( packet instanceof Packet0KeepAlive )
-        {
-            Packet0KeepAlive old = (Packet0KeepAlive) packet;
-            return new KeepAlive(old.getRandomId());
-        }
-        if ( packet instanceof Packet1Login )
-        {
-            Packet1Login old = (Packet1Login) packet;
-            return new Login(old.getEntityId(), old.getGameMode(), old.getDimension(), old.getDifficulty(), old.getMaxPlayers());
-        }
-        if ( packet instanceof Packet2Handshake )
-        {
-            // can't convert
-        }
-        if ( packet instanceof Packet3Chat )
-        {
-            Packet3Chat old = (Packet3Chat) packet;
-            return new Chat(old.getMessage());
-        }
-        if ( packet instanceof Packet9Respawn )
-        {
-            Packet9Respawn old = (Packet9Respawn) packet;
-            return new Respawn(old.getDimension(), old.getDifficulty(), old.getGameMode());
-        }
-        if ( packet instanceof PacketC9PlayerListItem )
-        {
-            PacketC9PlayerListItem old = (PacketC9PlayerListItem) packet;
-            return new PlayerListItem(old.getUsername(), old.isOnline(), old.getPing());
-
-        }
-        if ( packet instanceof PacketCBTabComplete )
-        {
-            // can't convert
-        }
-        if ( packet instanceof PacketCCSettings )
-        {
-            PacketCCSettings old = (PacketCCSettings) packet;
-            return new ClientSettings(old.getLocale(), old.getViewDistance(), old.getChatFlags(), true /* TODO - unknown */, old.getDifficulty(), old.isShowCape());
-        }
-        if ( packet instanceof PacketCDClientStatus )
-        {
-            PacketCDClientStatus old = (PacketCDClientStatus) packet;
-            return new ClientStatus(old.getPayload());
-        }
-        if ( packet instanceof PacketCEScoreboardObjective )
-        {
-            PacketCEScoreboardObjective old = (PacketCEScoreboardObjective) packet;
-            return new ScoreboardObjective(old.getName(), old.getText(), old.getAction());
-        }
-        if ( packet instanceof PacketCFScoreboardScore )
-        {
-            PacketCFScoreboardScore old = (PacketCFScoreboardScore) packet;
-            return new ScoreboardScore(old.getItemName(), old.getAction(), old.getScoreName(), old.getValue());
-        }
-        if ( packet instanceof PacketD0DisplayScoreboard )
-        {
-            PacketD0DisplayScoreboard old = (PacketD0DisplayScoreboard) packet;
-            return new ScoreboardDisplay(old.getPosition(), old.getName());
-        }
-        if ( packet instanceof PacketD1Team )
-        {
-            PacketD1Team old = (PacketD1Team) packet;
-            return new Team(old.getName(), old.getMode(), old.getDisplayName(), old.getPrefix(), old.getSuffix(), old.isFriendlyFire(), old.getPlayerCount(), old.getPlayers());
-        }
-        if ( packet instanceof PacketFAPluginMessage )
-        {
-            PacketFAPluginMessage old = (PacketFAPluginMessage) packet;
-            return new PluginMessage(old.getTag(), old.getData());
-        }
-        if ( packet instanceof PacketFCEncryptionResponse )
-        {
-            PacketFCEncryptionResponse old = (PacketFCEncryptionResponse) packet;
-            return new EncryptionResponse(old.getSharedSecret(), old.getVerifyToken());
-        }
-        if ( packet instanceof PacketFDEncryptionRequest )
-        {
-            PacketFDEncryptionRequest old = (PacketFDEncryptionRequest) packet;
-            return new EncryptionRequest(old.getServerId(), old.getPublicKey(), old.getVerifyToken());
-        }
-        if ( packet instanceof PacketFEPing )
-        {
-            // can't convert
-        }
-        if ( packet instanceof PacketFFKick )
-        {
-            PacketFFKick old = (PacketFFKick) packet;
-            return new Kick(BungeeCord.getInstance().gson.toJson( old.getMessage() ));
-        }
-
-        throw new RuntimeException("unable to convert packet");
     }
 }

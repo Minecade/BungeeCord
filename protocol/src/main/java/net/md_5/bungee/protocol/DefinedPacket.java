@@ -17,125 +17,54 @@ public abstract class DefinedPacket
 
     public void writeString(String s, ByteBuf buf)
     {
-        // TODO: Check len - use Guava?
         if ( id == null )
         {
-            byte[] b = s.getBytes( Charsets.UTF_8 );
-            writeVarInt( b.length, buf );
-            buf.writeBytes( b );
+            PacketUtil.writeSnapshotString(s, buf);
         } else
         {
-            buf.writeShort( s.length() );
-            for ( char c : s.toCharArray() )
-            {
-                buf.writeChar( c );
-            }
+            PacketUtil.writeVanillaString(s, buf);
         }
     }
 
     public String readString(ByteBuf buf)
     {
-        // TODO: Check len - use Guava?
         if ( id == null )
         {
-            int len = readVarInt( buf );
-            byte[] b = new byte[ len ];
-            buf.readBytes( b );
-
-            return new String( b, Charsets.UTF_8 );
+            return PacketUtil.readSnapshotString(buf);
         } else
         {
-            short len = buf.readShort();
-            char[] chars = new char[ len ];
-            for ( int i = 0; i < len; i++ )
-            {
-                chars[i] = buf.readChar();
-            }
-            return new String( chars );
+            return PacketUtil.readVanillaString(buf);
         }
     }
 
     public void writeArray(byte[] b, ByteBuf buf)
     {
-        // TODO: Check len - use Guava?
-        buf.writeShort( b.length );
-        buf.writeBytes( b );
+        PacketUtil.writeArray(b, buf);
     }
 
     public byte[] readArray(ByteBuf buf)
     {
-        // TODO: Check len - use Guava?
-        short len = buf.readShort();
-        byte[] ret = new byte[ len ];
-        buf.readBytes( ret );
-        return ret;
+        return PacketUtil.readArray(buf);
     }
 
     public void writeStringArray(String[] s, ByteBuf buf)
     {
-        writeVarInt( s.length, buf );
-        for ( String str : s )
-        {
-            writeString( str, buf );
-        }
+        PacketUtil.writeStringArray(s, buf);
     }
 
     public String[] readStringArray(ByteBuf buf)
     {
-        int len = readVarInt( buf );
-        String[] ret = new String[ len ];
-        for ( int i = 0; i < ret.length; i++ )
-        {
-            ret[i] = readString( buf );
-        }
-        return ret;
+        return PacketUtil.readStringArray(buf);
     }
 
     public static int readVarInt(ByteBuf input)
     {
-        int out = 0;
-        int bytes = 0;
-        byte in;
-        while ( true )
-        {
-            in = input.readByte();
-
-            out |= ( in & 0x7F ) << ( bytes++ * 7 );
-
-            if ( bytes > 32 )
-            {
-                throw new RuntimeException( "VarInt too big" );
-            }
-
-            if ( ( in & 0x80 ) != 0x80 )
-            {
-                break;
-            }
-        }
-
-        return out;
+        return PacketUtil.readVarInt(input);
     }
 
     public static void writeVarInt(int value, ByteBuf output)
     {
-        int part;
-        while ( true )
-        {
-            part = value & 0x7F;
-
-            value >>>= 7;
-            if ( value != 0 )
-            {
-                part |= 0x80;
-            }
-
-            output.writeByte( part );
-
-            if ( value == 0 )
-            {
-                break;
-            }
-        }
+        PacketUtil.writeVarInt(value, output);
     }
 
     public abstract void read(ByteBuf buf);

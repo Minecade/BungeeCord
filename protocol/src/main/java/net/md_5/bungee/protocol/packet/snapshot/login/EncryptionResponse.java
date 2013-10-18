@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.packet.snapshot;
+package net.md_5.bungee.protocol.packet.snapshot.login;
 
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -9,21 +9,24 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class TabCompleteRequest extends DefinedPacket
+public class EncryptionResponse extends DefinedPacket
 {
 
-    private String cursor;
+    private byte[] sharedSecret;
+    private byte[] verifyToken;
 
     @Override
     public void read(ByteBuf buf)
     {
-        cursor = readString( buf );
+        sharedSecret = readArray( buf );
+        verifyToken = readArray( buf );
     }
 
     @Override
     public void write(ByteBuf buf)
     {
-        writeString( cursor, buf );
+        writeArray( sharedSecret, buf );
+        writeArray( verifyToken, buf );
     }
 
     @Override

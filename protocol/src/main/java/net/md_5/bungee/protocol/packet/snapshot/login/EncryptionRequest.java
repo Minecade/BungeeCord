@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.packet.snapshot;
+package net.md_5.bungee.protocol.packet.snapshot.login;
 
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
@@ -12,21 +12,27 @@ import net.md_5.bungee.protocol.DefinedPacket;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class PingPacket extends DefinedPacket
+public class EncryptionRequest extends DefinedPacket
 {
 
-    private long time;
+    private String serverId;
+    private byte[] publicKey;
+    private byte[] verifyToken;
 
     @Override
     public void read(ByteBuf buf)
     {
-        time = buf.readLong();
+        serverId = readString( buf );
+        publicKey = readArray( buf );
+        verifyToken = readArray( buf );
     }
 
     @Override
     public void write(ByteBuf buf)
     {
-        buf.writeLong( time );
+        writeString( serverId, buf );
+        writeArray( publicKey, buf );
+        writeArray( verifyToken, buf );
     }
 
     @Override

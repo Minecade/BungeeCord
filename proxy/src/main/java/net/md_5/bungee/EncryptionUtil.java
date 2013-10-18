@@ -17,8 +17,8 @@ import javax.crypto.spec.SecretKeySpec;
 import lombok.Getter;
 import net.md_5.bungee.protocol.packet.PacketFCEncryptionResponse;
 import net.md_5.bungee.protocol.packet.PacketFDEncryptionRequest;
-import net.md_5.bungee.protocol.packet.snapshot.EncryptionRequest;
-import net.md_5.bungee.protocol.packet.snapshot.EncryptionResponse;
+import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionRequest;
+import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionResponse;
 
 /**
  * Class containing all encryption related methods for the proxy.

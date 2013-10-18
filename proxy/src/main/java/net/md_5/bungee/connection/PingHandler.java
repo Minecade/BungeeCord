@@ -8,7 +8,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
-import net.md_5.bungee.protocol.packet.snapshot.Kick;
+import net.md_5.bungee.protocol.packet.snapshot.game.Kick;
 
 @RequiredArgsConstructor
 public class PingHandler extends PacketHandler

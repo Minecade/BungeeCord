@@ -3,12 +3,15 @@ package net.md_5.bungee.protocol.skip;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.Getter;
 import net.md_5.bungee.protocol.OpCode;
 import net.md_5.bungee.protocol.Protocol;
 
 public class PacketReader
 {
 
+    @Getter
     private final Instruction[][] instructions;
 
     public PacketReader(Protocol protocol)

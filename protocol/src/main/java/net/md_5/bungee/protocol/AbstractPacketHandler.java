@@ -2,6 +2,14 @@ package net.md_5.bungee.protocol;
 
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.snapshot.*;
+import net.md_5.bungee.protocol.packet.snapshot.game.*;
+import net.md_5.bungee.protocol.packet.snapshot.handshake.Handshake;
+import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionRequest;
+import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionResponse;
+import net.md_5.bungee.protocol.packet.snapshot.login.LoginRequest;
+import net.md_5.bungee.protocol.packet.snapshot.login.LoginSuccess;
+import net.md_5.bungee.protocol.packet.snapshot.status.StatusRequest;
+import net.md_5.bungee.protocol.packet.snapshot.status.StatusResponse;
 
 public abstract class AbstractPacketHandler
 {

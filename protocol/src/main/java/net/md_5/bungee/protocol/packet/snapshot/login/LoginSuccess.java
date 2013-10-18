@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.packet.snapshot;
+package net.md_5.bungee.protocol.packet.snapshot.login;
 
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
@@ -12,21 +12,24 @@ import net.md_5.bungee.protocol.DefinedPacket;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class StatusResponse extends DefinedPacket
+public class LoginSuccess extends DefinedPacket
 {
 
-    private String response;
+    private String uuid;
+    private String username;
 
     @Override
     public void read(ByteBuf buf)
     {
-        response = readString( buf );
+        uuid = readString( buf );
+        username = readString( buf );
     }
 
     @Override
     public void write(ByteBuf buf)
     {
-        writeString( response, buf );
+        writeString( uuid, buf );
+        writeString( username, buf );
     }
 
     @Override

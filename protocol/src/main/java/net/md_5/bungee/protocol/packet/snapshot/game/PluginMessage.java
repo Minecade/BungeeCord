@@ -1,4 +1,4 @@
-package net.md_5.bungee.protocol.packet.snapshot;
+package net.md_5.bungee.protocol.packet.snapshot.game;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

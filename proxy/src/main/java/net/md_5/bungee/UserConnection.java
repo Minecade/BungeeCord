@@ -36,7 +36,7 @@ import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.Packet3Chat;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
-import net.md_5.bungee.protocol.packet.snapshot.ClientSettings;
+import net.md_5.bungee.protocol.packet.snapshot.game.ClientSettings;
 import net.md_5.bungee.protocol.snapshot.MinecraftEncoder;
 import net.md_5.bungee.protocol.snapshot.MinecraftDecoder;
 import net.md_5.bungee.protocol.version.Snapshot;

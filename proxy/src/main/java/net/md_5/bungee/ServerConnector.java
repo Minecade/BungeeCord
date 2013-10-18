@@ -17,6 +17,7 @@ import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.api.score.Team;
 import net.md_5.bungee.connection.CancelSendSignal;
 import net.md_5.bungee.connection.DownstreamBridge;
+import net.md_5.bungee.connection.DownstreamBridgeSnapshot;
 import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.netty.CipherDecoder;
 import net.md_5.bungee.netty.CipherEncoder;
@@ -139,7 +140,14 @@ public class ServerConnector extends ServerConnectorAbstract
             user.getPendingConnects().remove( target );
 
             user.setServer( server );
-            ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
+
+            if( ch.isSnapshot() )
+            {
+                ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridgeSnapshot( bungee, user, server ) );
+            } else
+            {
+                ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
+            }
         }
 
         bungee.getPluginManager().callEvent( new ServerSwitchEvent( user ) );

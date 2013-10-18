@@ -1,29 +1,32 @@
-package net.md_5.bungee.protocol.packet.snapshot;
+package net.md_5.bungee.protocol.packet.snapshot.status;
 
+import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
-import io.netty.buffer.ByteBuf;
-import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Kick extends DefinedPacket
+public class StatusResponse extends DefinedPacket
 {
 
-    private String message;
+    private String response;
 
     @Override
     public void read(ByteBuf buf)
     {
-        message = readString( buf );
+        response = readString( buf );
     }
 
     @Override
     public void write(ByteBuf buf)
     {
-        writeString( message, buf );
+        writeString( response, buf );
     }
 
     @Override

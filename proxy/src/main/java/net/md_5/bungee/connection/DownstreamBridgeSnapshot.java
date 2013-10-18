@@ -19,6 +19,7 @@ import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.api.score.Team;
 import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.snapshot.*;
+import net.md_5.bungee.protocol.packet.snapshot.game.*;
 
 public class DownstreamBridgeSnapshot extends DownstreamBridgeAbstract
 {
@@ -34,6 +35,11 @@ public class DownstreamBridgeSnapshot extends DownstreamBridgeAbstract
         if ( !server.isObsolete() )
         {
             // EntityMap.rewrite( packet.buf, con.getServerEntityId(), con.getClientEntityId() );
+            if(packet.packet != null) {
+                System.out.println("Packet " + packet.packet.getClass());
+            } else {
+                System.out.println("Null packet " + packet);
+            }
             con.sendPacket( packet );
         }
     }
@@ -96,7 +102,7 @@ public class DownstreamBridgeSnapshot extends DownstreamBridgeAbstract
     }
 
     @Override
-    public void handle(net.md_5.bungee.protocol.packet.snapshot.Team team) throws Exception
+    public void handle(net.md_5.bungee.protocol.packet.snapshot.game.Team team) throws Exception
     {
         Scoreboard serverScoreboard = con.getServerSentScoreboard();
         // Remove team and move on
