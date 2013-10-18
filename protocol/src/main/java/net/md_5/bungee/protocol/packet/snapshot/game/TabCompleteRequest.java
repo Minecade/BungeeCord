@@ -6,13 +6,16 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class TabCompleteRequest extends DefinedPacket
 {
 
     private String cursor;
+
+    public TabCompleteRequest()
+    {
+        setSnapshot(true);
+    }
 
     @Override
     public void read(ByteBuf buf)

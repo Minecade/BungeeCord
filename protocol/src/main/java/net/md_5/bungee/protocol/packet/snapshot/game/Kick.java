@@ -6,13 +6,22 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Kick extends DefinedPacket
 {
 
     private String message;
+
+    public Kick()
+    {
+        setSnapshot(true);
+    }
+
+    public Kick(String message)
+    {
+        this();
+        this.message = message;
+    }
 
     @Override
     public void read(ByteBuf buf)

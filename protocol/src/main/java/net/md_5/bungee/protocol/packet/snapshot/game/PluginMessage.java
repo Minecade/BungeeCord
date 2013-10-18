@@ -12,14 +12,24 @@ import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.MinecraftInput;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class PluginMessage extends DefinedPacket
 {
 
     private String tag;
     private byte[] data;
+
+    public PluginMessage()
+    {
+        setSnapshot(true);
+    }
+
+    public PluginMessage(String tag, byte[] data)
+    {
+        this();
+        this.tag = tag;
+        this.data = data;
+    }
 
     @Override
     public void read(ByteBuf buf)

@@ -6,8 +6,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class PlayerListItem extends DefinedPacket
 {
@@ -15,6 +13,11 @@ public class PlayerListItem extends DefinedPacket
     private String username;
     private boolean online;
     private short ping;
+
+    public PlayerListItem()
+    {
+        setSnapshot(true);
+    }
 
     @Override
     public void read(ByteBuf buf)

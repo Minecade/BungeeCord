@@ -1,7 +1,6 @@
 package net.md_5.bungee.protocol;
 
 import net.md_5.bungee.protocol.packet.*;
-import net.md_5.bungee.protocol.packet.snapshot.*;
 import net.md_5.bungee.protocol.packet.snapshot.game.*;
 import net.md_5.bungee.protocol.packet.snapshot.handshake.Handshake;
 import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionRequest;

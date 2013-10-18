@@ -6,8 +6,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class ClientSettings extends DefinedPacket
 {
@@ -19,13 +17,18 @@ public class ClientSettings extends DefinedPacket
     private byte difficulty;
     private boolean showCape;
 
+    public ClientSettings()
+    {
+        setSnapshot(true);
+    }
+
     @Override
     public void read(ByteBuf buf)
     {
         locale = readString( buf );
         viewDistance = buf.readByte();
         chatFlags = buf.readByte();
-        unknown = buf.readBoolean();                
+        unknown = buf.readBoolean();
         difficulty = buf.readByte();
         showCape = buf.readBoolean();
     }

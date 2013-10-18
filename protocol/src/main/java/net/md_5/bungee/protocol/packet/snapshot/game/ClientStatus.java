@@ -6,13 +6,16 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class ClientStatus extends DefinedPacket
 {
 
     private byte payload;
+
+    public ClientStatus()
+    {
+        setSnapshot(true);
+    }
 
     @Override
     public void read(ByteBuf buf)

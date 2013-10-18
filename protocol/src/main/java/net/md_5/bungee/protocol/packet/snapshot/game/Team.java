@@ -6,8 +6,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Team extends DefinedPacket
 {
@@ -24,6 +22,11 @@ public class Team extends DefinedPacket
     private short playerCount;
     private String[] players;
 
+    public Team()
+    {
+        setSnapshot(true);
+    }
+
     /**
      * Packet to destroy a team.
      *
@@ -31,6 +34,7 @@ public class Team extends DefinedPacket
      */
     public Team(String name)
     {
+        this();
         this.name = name;
         this.mode = 1;
     }

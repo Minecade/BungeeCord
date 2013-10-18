@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @NoArgsConstructor
+@AllArgsConstructor
 public abstract class DefinedPacket
 {
 
@@ -25,11 +26,6 @@ public abstract class DefinedPacket
         this.id = id;
     }
     
-    public ByteBuf getBufRaw()
-    {
-        return this.buf;
-    }
-
     public ByteBuf getBufCopy()
     {
         return this.buf.copy();
@@ -39,9 +35,11 @@ public abstract class DefinedPacket
     {
         if ( isSnapshot() )
         {
+            System.out.println("Snapshot string");
             PacketUtil.writeSnapshotString(s, buf);
         } else
         {
+            System.out.println("Vanilla string");
             PacketUtil.writeVanillaString(s, buf);
         }
     }

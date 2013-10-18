@@ -6,8 +6,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Handshake extends DefinedPacket
 {
@@ -16,6 +14,11 @@ public class Handshake extends DefinedPacket
     private String host;
     private int port;
     private int requestedProtocol;
+
+    public Handshake()
+    {
+        setSnapshot(true);
+    }
 
     @Override
     public void read(ByteBuf buf)

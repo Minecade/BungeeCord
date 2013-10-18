@@ -6,8 +6,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Respawn extends DefinedPacket
 {
@@ -15,6 +13,21 @@ public class Respawn extends DefinedPacket
     private int dimension;
     private short difficulty;
     private short gameMode;
+    private String levelType;
+
+    public Respawn()
+    {
+        setSnapshot(true);
+    }
+
+    public Respawn(int dimension, short difficulty, short gameMode, String levelType)
+    {
+        this();
+        this.dimension = dimension;
+        this.difficulty = difficulty;
+        this.gameMode = gameMode;
+        this.levelType = levelType;
+    }
 
     @Override
     public void read(ByteBuf buf)
@@ -22,6 +35,7 @@ public class Respawn extends DefinedPacket
         dimension = buf.readInt();
         difficulty = buf.readUnsignedByte();
         gameMode = buf.readUnsignedByte();
+        levelType = readString( buf );
     }
 
     @Override
@@ -30,6 +44,7 @@ public class Respawn extends DefinedPacket
         buf.writeInt( dimension );
         buf.writeByte( difficulty );
         buf.writeByte( gameMode );
+        writeString( levelType, buf );
     }
 
     @Override

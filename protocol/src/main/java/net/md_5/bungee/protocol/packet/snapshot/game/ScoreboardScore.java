@@ -6,8 +6,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class ScoreboardScore extends DefinedPacket
 {
@@ -19,6 +17,11 @@ public class ScoreboardScore extends DefinedPacket
     private byte action;
     private String scoreName;
     private int value;
+
+    public ScoreboardScore()
+    {
+        setSnapshot(true);
+    }
 
     @Override
     public void read(ByteBuf buf)

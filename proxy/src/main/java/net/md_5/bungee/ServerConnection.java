@@ -8,14 +8,16 @@ import lombok.Setter;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
+import net.md_5.bungee.protocol.translations.Translations;
+import net.md_5.bungee.protocol.version.Snapshot.Direction;
 
 @RequiredArgsConstructor
 public class ServerConnection implements Server
 {
 
-    @Getter
     private final ChannelWrapper ch;
     @Getter
     private final BungeeServerInfo info;
@@ -27,9 +29,30 @@ public class ServerConnection implements Server
         @Override
         public void sendPacket(DefinedPacket packet)
         {
-            ch.write( packet );
+            System.out.println("Sending definedPacket to server. Channel Snapshot: " + ch.isSnapshot() + " - Packet Snapshot: " + packet.isSnapshot());
+            if ( ch.isSnapshot() )
+            {
+                Object newPacket = Translations.translate(packet, Direction.TO_SERVER);
+                ch.write( newPacket );
+            } else
+            {
+                ch.write( packet );
+            }
         }
     };
+
+    public void sendPacket( PacketWrapper packet )
+    {
+        System.out.println("Sending packetWrapper to server. Channel Snapshot: " + ch.isSnapshot() + " - Packet Snapshot: " + packet.isSnapshot());
+        if ( ch.isSnapshot() )
+        {
+            Object newPacket = Translations.translate(packet, Direction.TO_SERVER);
+            ch.write( newPacket );
+        } else
+        {
+            ch.write( packet );
+        }
+    }
 
     @Override
     public void sendData(String channel, byte[] data)

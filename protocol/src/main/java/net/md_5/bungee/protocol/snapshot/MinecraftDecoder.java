@@ -1,6 +1,5 @@
 package net.md_5.bungee.protocol.snapshot;
 
-import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -9,7 +8,7 @@ import java.util.List;
 import net.md_5.bungee.protocol.BadPacketException;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.PacketWrapper;
-import net.md_5.bungee.protocol.version.Snapshot;
+import net.md_5.bungee.protocol.version.Snapshot.Direction;
 import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 import net.md_5.bungee.protocol.version.Snapshot.ProtocolDirection;
 import lombok.AllArgsConstructor;
@@ -38,14 +37,15 @@ public class MinecraftDecoder extends ByteToMessageDecoder
             packet.read( in );
             if ( in.readableBytes() != 0 )
             {
-                System.out.println( in.toString( Charsets.UTF_8 ) );
-                // throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot );
+                throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot );
             }
         } else
         {
             in.skipBytes( in.readableBytes() );
         }
 
-        out.add( new PacketWrapper( packetId, packet, copy, true ) );
+        PacketWrapper wrapper = new PacketWrapper( packetId, packet, copy, true );
+        wrapper.setDirection(server ? Direction.TO_SERVER : Direction.TO_CLIENT);
+        out.add( wrapper );
     }
 }

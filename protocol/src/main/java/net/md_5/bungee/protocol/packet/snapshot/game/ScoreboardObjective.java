@@ -6,8 +6,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class ScoreboardObjective extends DefinedPacket
 {
@@ -18,6 +16,19 @@ public class ScoreboardObjective extends DefinedPacket
      * 0 to create, 1 to remove.
      */
     private byte action;
+
+    public ScoreboardObjective()
+    {
+        setSnapshot(true);
+    }
+
+    public ScoreboardObjective(String name, String text, byte action)
+    {
+        this();
+        this.name = name;
+        this.text = text;
+        this.action = action;
+    }
 
     @Override
     public void read(ByteBuf buf)

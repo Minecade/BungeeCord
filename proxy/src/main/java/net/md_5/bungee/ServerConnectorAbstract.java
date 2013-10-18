@@ -9,6 +9,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.connection.InitialHandlerSnapshot;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.PacketHandler;
+import net.md_5.bungee.protocol.packet.Packet2Handshake;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.version.Snapshot;
 import net.md_5.bungee.protocol.version.Snapshot.Protocol;
@@ -51,13 +52,17 @@ public abstract class ServerConnectorAbstract extends PacketHandler
         out.writeUTF( user.getAddress().getHostString() );
         out.writeInt( user.getAddress().getPort() );
 
+        System.out.println("Server connector snapshot? " + channel.isSnapshot());
+
         //  TODO - WTF?
         if ( !channel.isSnapshot())
         {
             channel.write( new PacketFAPluginMessage( "BungeeCord", out.toByteArray() ) );
+            channel.write( new Packet2Handshake( (byte) 78, user.getName(), "localhost", 25565 ) );
+        } else
+        {
+            channel.write( user.getPendingConnection().getHandshake() );
         }
-
-        channel.write( user.getPendingConnection().getHandshake() );
 
         if ( channel.isSnapshot() )
         {

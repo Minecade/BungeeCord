@@ -79,7 +79,7 @@ public class ServerConnectorSnapshot extends ServerConnectorAbstract
                 user.setServerEntityId( login.getEntityId() );
 
                 // Set tab list size, this sucks balls, TODO: what shall we do about packet mutability
-                Login modLogin = new Login( login.getEntityId(), login.getGameMode(), (byte) login.getDimension(), login.getDifficulty(), (byte) user.getPendingConnection().getListener().getTabListSize() );
+                Login modLogin = new Login( login.getEntityId(), login.getGameMode(), (byte) login.getDimension(), login.getDifficulty(), (byte) user.getPendingConnection().getListener().getTabListSize(), login.getLevelType() );
                 user.unsafe().sendPacket( modLogin );
 
                 MinecraftOutput out = new MinecraftOutput();
@@ -103,7 +103,7 @@ public class ServerConnectorSnapshot extends ServerConnectorAbstract
                 user.sendDimensionSwitch();
 
                 user.setServerEntityId( login.getEntityId() );
-                user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode() ) );
+                user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
 
                 // Remove from old servers
                 user.getServer().setObsolete( true );

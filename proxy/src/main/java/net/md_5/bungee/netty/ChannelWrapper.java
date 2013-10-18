@@ -1,11 +1,8 @@
 package net.md_5.bungee.netty;
 
-import net.md_5.bungee.Util;
-import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.snapshot.MinecraftDecoder;
 import net.md_5.bungee.protocol.snapshot.MinecraftEncoder;
-import net.md_5.bungee.protocol.translations.Translations;
 import net.md_5.bungee.protocol.version.Snapshot;
 import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 
@@ -26,28 +23,16 @@ public class ChannelWrapper
     // client (snapshot -> server (vanilla) - translate reading
     // server (vanilla) -> client (vanilla) - no translation
     // client (vanilla) -> server (vanilla) - no translation
-    private boolean translate = false;
 
     public ChannelWrapper(ChannelHandlerContext ctx)
     {
         this.ch = ctx.channel();
     }
 
-    public ChannelWrapper(ChannelHandlerContext ctx, boolean translate)
-    {
-        this(ctx);
-        this.translate = translate;
-    }
-
     public synchronized void write(Object packet)
     {
         if ( !closed )
         {
-            if ( translate )
-            {
-                packet = Translations.translate(packet);
-            }
-
             if ( packet instanceof PacketWrapper )
             {
                 ( (PacketWrapper) packet ).setReleased( true );

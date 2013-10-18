@@ -6,14 +6,17 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class EncryptionResponse extends DefinedPacket
 {
 
     private byte[] sharedSecret;
     private byte[] verifyToken;
+
+    public EncryptionResponse()
+    {
+        setSnapshot(true);
+    }
 
     @Override
     public void read(ByteBuf buf)

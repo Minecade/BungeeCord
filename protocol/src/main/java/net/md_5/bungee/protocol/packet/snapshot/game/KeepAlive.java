@@ -6,13 +6,16 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class KeepAlive extends DefinedPacket
 {
 
     private int randomId;
+
+    public KeepAlive()
+    {
+        setSnapshot(true);
+    }
 
     @Override
     public void read(ByteBuf buf)

@@ -1,22 +1,29 @@
 package net.md_5.bungee.protocol.packet.snapshot.login;
 
 import io.netty.buffer.ByteBuf;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class LoginSuccess extends DefinedPacket
 {
 
     private String uuid;
     private String username;
+
+    public LoginSuccess()
+    {
+        setSnapshot(true);
+    }
+
+    public LoginSuccess(String uuid, String username)
+    {
+        this.uuid = uuid;
+        this.username = username;
+    }
 
     @Override
     public void read(ByteBuf buf)

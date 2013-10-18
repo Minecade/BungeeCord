@@ -141,7 +141,7 @@ public class ServerConnector extends ServerConnectorAbstract
 
             user.setServer( server );
 
-            if( ch.isSnapshot() )
+            if( false )
             {
                 ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridgeSnapshot( bungee, user, server ) );
             } else

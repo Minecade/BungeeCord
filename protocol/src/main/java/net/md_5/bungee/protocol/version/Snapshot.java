@@ -11,7 +11,6 @@ import java.lang.reflect.Constructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.protocol.*;
-import net.md_5.bungee.protocol.packet.snapshot.*;
 import net.md_5.bungee.protocol.packet.snapshot.game.*;
 import net.md_5.bungee.protocol.packet.snapshot.handshake.Handshake;
 import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionRequest;
@@ -35,7 +34,7 @@ public class Snapshot implements MinecraftProtocol
         TO_SERVER,
         TO_CLIENT;
     }
-    
+
     public static final int MAX_PACKET_ID = 0xFF;
     public static final int PROTOCOL_VERSION = 0x00;
     public static final String MINECRAFT_VERSION = "13w41b";
@@ -43,7 +42,7 @@ public class Snapshot implements MinecraftProtocol
     @RequiredArgsConstructor
     public static class ProtocolDirection
     {
-
+        @Getter
         private final Direction direction;
         private final TObjectIntMap<Class<? extends DefinedPacket>> packetMap = new TObjectIntHashMap<>( MAX_PACKET_ID );
         private final Class<? extends DefinedPacket>[] packetClasses = new Class[ MAX_PACKET_ID ];
@@ -75,7 +74,6 @@ public class Snapshot implements MinecraftProtocol
             {
                 DefinedPacket newPacket = packetClasses[id].newInstance();
                 newPacket.setId(id);
-                newPacket.setSnapshot(true);
                 newPacket.setDirection(direction);
                 newPacket.setBuf(buf);
 
@@ -98,10 +96,10 @@ public class Snapshot implements MinecraftProtocol
             packetClasses[id] = packetClass;
             packetMap.put( packetClass, id );
         }
-        
+
         protected final void registerPacket(int id, OpCode[] codes)
         {
-            
+
         }
 
         protected final void unregisterPacket(int id)
@@ -118,14 +116,14 @@ public class Snapshot implements MinecraftProtocol
             return packetMap.get( packet );
         }
     }
-    
+
     public enum Protocol
     {
-    
+
         // -1
         HANDSHAKE
         {
-            
+
             {
                 TO_SERVER.registerPacket( 0x00, Handshake.class );
             }
@@ -133,7 +131,7 @@ public class Snapshot implements MinecraftProtocol
         // 0
         GAME
         {
-            
+
             {
                 TO_CLIENT.registerPacket( 0x00, KeepAlive.class );
                 TO_CLIENT.registerPacket( 0x01, Login.class );
@@ -147,7 +145,7 @@ public class Snapshot implements MinecraftProtocol
                 TO_CLIENT.registerPacket( 0x3E, Team.class );
                 TO_CLIENT.registerPacket( 0x3F, PluginMessage.class );
                 TO_CLIENT.registerPacket( 0x40, Kick.class );
-    
+
                 TO_SERVER.registerPacket( 0x00, KeepAlive.class );
                 TO_SERVER.registerPacket( 0x01, Chat.class );
                 TO_SERVER.registerPacket( 0x14, TabCompleteRequest.class );
@@ -158,11 +156,11 @@ public class Snapshot implements MinecraftProtocol
         // 1
         STATUS
         {
-            
+
             {
                 TO_CLIENT.registerPacket( 0x00, StatusResponse.class );
                 TO_CLIENT.registerPacket( 0x01, PingPacket.class );
-    
+
                 TO_SERVER.registerPacket( 0x00, StatusRequest.class );
                 TO_SERVER.registerPacket( 0x01, PingPacket.class );
             }
@@ -170,12 +168,12 @@ public class Snapshot implements MinecraftProtocol
         //2
         LOGIN
         {
-            
+
             {
                 TO_CLIENT.registerPacket( 0x00, Kick.class );
                 TO_CLIENT.registerPacket( 0x01, EncryptionRequest.class );
                 TO_CLIENT.registerPacket( 0x02, LoginSuccess.class );
-    
+
                 TO_SERVER.registerPacket( 0x00, LoginRequest.class );
                 TO_SERVER.registerPacket( 0x01, EncryptionResponse.class );
             }
@@ -183,5 +181,19 @@ public class Snapshot implements MinecraftProtocol
 
         public final ProtocolDirection TO_SERVER = new ProtocolDirection( Direction.TO_SERVER );
         public final ProtocolDirection TO_CLIENT = new ProtocolDirection( Direction.TO_CLIENT );
+
+        public ProtocolDirection getProtocolDirection(Direction direction)
+        {
+            if ( direction == Direction.TO_SERVER )
+            {
+                return TO_SERVER;
+            } else if ( direction == Direction.TO_CLIENT )
+            {
+                return TO_CLIENT;
+            } else
+            {
+                throw new RuntimeException("Invalid protocol direction " + direction.toString());
+            }
+        }
     }
 }

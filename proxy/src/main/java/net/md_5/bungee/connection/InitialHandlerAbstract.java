@@ -36,7 +36,9 @@ public abstract class InitialHandlerAbstract extends PacketHandler implements Pe
         @Override
         public void sendPacket(DefinedPacket packet)
         {
+            System.out.println(ch.isSnapshot() + " " + packet.isSnapshot());
             ch.write( packet );
+            System.out.println(packet.getClass());
         }
     };
     @Getter

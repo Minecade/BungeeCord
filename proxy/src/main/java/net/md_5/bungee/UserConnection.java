@@ -39,7 +39,9 @@ import net.md_5.bungee.protocol.packet.PacketFFKick;
 import net.md_5.bungee.protocol.packet.snapshot.game.ClientSettings;
 import net.md_5.bungee.protocol.snapshot.MinecraftEncoder;
 import net.md_5.bungee.protocol.snapshot.MinecraftDecoder;
+import net.md_5.bungee.protocol.translations.Translations;
 import net.md_5.bungee.protocol.version.Snapshot;
+import net.md_5.bungee.protocol.version.Snapshot.Direction;
 import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 import net.md_5.bungee.protocol.version.Vanilla;
 import net.md_5.bungee.util.CaseInsensitiveSet;
@@ -106,7 +108,15 @@ public final class UserConnection implements ProxiedPlayer
         @Override
         public void sendPacket(DefinedPacket packet)
         {
-            ch.write( packet );
+            System.out.println("Sending definedPacket to user. Channel Snapshot: " + ch.isSnapshot() + " - Packet Snapshot: " + packet.isSnapshot());
+            if ( ch.isSnapshot() )
+            {
+                Object newPacket = Translations.translate(packet, Direction.TO_CLIENT);
+                ch.write( newPacket );
+            } else
+            {
+                ch.write( packet );
+            }
         }
     };
 
@@ -138,7 +148,15 @@ public final class UserConnection implements ProxiedPlayer
 
     public void sendPacket(PacketWrapper packet)
     {
-        ch.write( packet );
+        System.out.println("Sending packetWrapper to user. Channel Snapshot: " + ch.isSnapshot() + " - Packet Snapshot: " + packet.isSnapshot());
+        if ( ch.isSnapshot() )
+        {
+            Object newPacket = Translations.translate(packet, Direction.TO_CLIENT);
+            ch.write( newPacket );
+        } else
+        {
+            ch.write( packet );
+        }
     }
 
     @Deprecated
@@ -283,7 +301,7 @@ public final class UserConnection implements ProxiedPlayer
     public void chat(String message)
     {
         Preconditions.checkState( server != null, "Not connected to server" );
-        server.getCh().write( new Packet3Chat( message ) );
+        server.unsafe().sendPacket( new Packet3Chat( message ) );
     }
 
     @Override

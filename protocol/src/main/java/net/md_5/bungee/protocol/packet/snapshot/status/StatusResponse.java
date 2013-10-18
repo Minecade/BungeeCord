@@ -1,21 +1,28 @@
 package net.md_5.bungee.protocol.packet.snapshot.status;
 
 import io.netty.buffer.ByteBuf;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class StatusResponse extends DefinedPacket
 {
 
     private String response;
+
+    public StatusResponse()
+    {
+        setSnapshot(true);
+    }
+
+    public StatusResponse(String response)
+    {
+        this();
+        this.response = response;
+    }
 
     @Override
     public void read(ByteBuf buf)

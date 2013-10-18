@@ -2,20 +2,27 @@ package net.md_5.bungee.protocol.packet.snapshot.game;
 
 import net.md_5.bungee.protocol.DefinedPacket;
 import io.netty.buffer.ByteBuf;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class TabCompleteResponse extends DefinedPacket
 {
 
     private String[] commands;
+
+    public TabCompleteResponse()
+    {
+        setSnapshot(true);
+    }
+
+    public TabCompleteResponse(String[] commands)
+    {
+        this();
+        this.commands = commands;
+    }
 
     @Override
     public void read(ByteBuf buf)

@@ -6,8 +6,6 @@ import io.netty.buffer.ByteBuf;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Login extends DefinedPacket
 {
@@ -17,6 +15,23 @@ public class Login extends DefinedPacket
     protected int dimension;
     protected short difficulty;
     protected short maxPlayers;
+    protected String levelType;
+
+    public Login()
+    {
+        setSnapshot(true);
+    }
+
+    public Login(int entityId, short gameMode, int dimension, short difficulty, short maxPlayers, String levelType)
+    {
+        this();
+        this.entityId = entityId;
+        this.gameMode = gameMode;
+        this.dimension = dimension;
+        this.difficulty = difficulty;
+        this.maxPlayers = maxPlayers;
+        this.levelType = levelType;
+    }
 
     @Override
     public void read(ByteBuf buf)
@@ -26,6 +41,7 @@ public class Login extends DefinedPacket
         dimension = buf.readByte();
         difficulty = buf.readByte();
         maxPlayers = buf.readUnsignedByte();
+        levelType = readString( buf );
     }
 
     @Override
@@ -36,6 +52,7 @@ public class Login extends DefinedPacket
         buf.writeByte( dimension );
         buf.writeByte( difficulty );
         buf.writeByte( maxPlayers );
+        writeString( levelType, buf );
     }
 
     @Override

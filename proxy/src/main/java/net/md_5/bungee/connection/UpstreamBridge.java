@@ -32,7 +32,7 @@ public class UpstreamBridge extends UpstreamBridgeAbstract
         EntityMap.rewrite( packet.getBufRaw(), con.getClientEntityId(), con.getServerEntityId() );
         if ( con.getServer() != null )
         {
-            con.getServer().getCh().write( packet );
+            con.getServer().sendPacket( packet );
         }
     }
 
