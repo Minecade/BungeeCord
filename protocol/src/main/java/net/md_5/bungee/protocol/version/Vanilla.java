@@ -29,7 +29,6 @@ import net.md_5.bungee.protocol.packet.PacketFDEncryptionRequest;
 import net.md_5.bungee.protocol.packet.PacketFEPing;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
 import net.md_5.bungee.protocol.skip.PacketReader;
-import net.md_5.bungee.protocol.version.Snapshot.Direction;
 
 public class Vanilla implements Protocol
 {
@@ -67,7 +66,7 @@ public class Vanilla implements Protocol
     {
         PROTOCOL_VERSION = protocol;
         GAME_VERSION = version;
-        
+
         classes[0x00] = Packet0KeepAlive.class;
         classes[0x01] = Packet1Login.class;
         classes[0x02] = Packet2Handshake.class;
@@ -105,12 +104,9 @@ public class Vanilla implements Protocol
     public static DefinedPacket read(short id, ByteBuf buf, Protocol protocol)
     {
         DefinedPacket packet = packet( id, protocol );
-        int start = buf.readerIndex();
         if ( packet != null )
         {
             packet.read( buf );
-            packet.setBuf(buf.copy(start, buf.readerIndex() - start));
-
             return packet;
         }
         protocol.getSkipper().tryRead( id, buf );
@@ -150,7 +146,7 @@ public class Vanilla implements Protocol
     {
         return PROTOCOL_VERSION;
     }
-    
+
     public String getGameVersion()
     {
         return GAME_VERSION;

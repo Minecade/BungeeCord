@@ -1,5 +1,7 @@
 package net.md_5.bungee.protocol.translations;
 
+import com.google.common.base.Preconditions;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Data;
@@ -7,8 +9,6 @@ import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.OpCode;
 import net.md_5.bungee.protocol.PacketUtil;
 import net.md_5.bungee.protocol.version.Snapshot.Direction;
-
-import com.google.common.base.Preconditions;
 
 @Data
 public class Translation {
@@ -63,10 +63,6 @@ public class Translation {
         } else {
             translator.vanillaToSnapshot(in, out);
         }
-
-        ByteBuf result = Unpooled.buffer(out.readableBytes());
-        PacketUtil.writeVarInt(out.readableBytes(), result);
-        result.writeBytes(out.readBytes(out.readableBytes()));
 
         return out;
     }

@@ -80,11 +80,13 @@ public class Translations {
         {
             DefinedPacket definedPacket = (DefinedPacket) packet;
             DefinedPacket translatedPacket;
+            ByteBuf translatedData;
             int newPacketId;
 
             if ( definedPacket.isSnapshot() )
             {
                 System.out.println("Translating a snapshot packet to vanilla (" + definedPacket.getDirection() + ")");
+
                 // create a vanilla packet from a snapshot packet
                 if ( definedPacket.getDirection() == Direction.TO_CLIENT)
                 {
@@ -97,47 +99,78 @@ public class Translations {
                     throw new RuntimeException("Invalid direction " + definedPacket.getDirection());
                 }
 
-                ByteBuf newBuffer = Unpooled.buffer();
-                newBuffer.writeByte(definedPacket.getId());
-                definedPacket.write(newBuffer);
+                // make a buf of the packet's data if the packet was instantiated via api
+                if ( definedPacket.getBuf() == null )
+                {
+                    ByteBuf newBuf = Unpooled.buffer();
+                    PacketUtil.writeVarInt(translation.getSnapshotPacketId(), newBuf);
+                    definedPacket.write(newBuf);
+                    definedPacket.setBuf(newBuf);
+                }
 
-                translated = translation.translateToVanilla(newBuffer);
-                translatedPacket = Vanilla.getInstance().read(translation.getVanillaPacketId(), translated);
+                // get the full translated packet bytebuf and just the data bytebuf
+                translated = translation.translateToVanilla(definedPacket.getBufCopy());
+                translatedData = translated.copy();
+                translatedData.readUnsignedByte();
+
+                // form a vanilla packet
                 newPacketId = translation.getVanillaPacketId();
+                translatedPacket = Vanilla.getInstance().read(translation.getVanillaPacketId(), translatedData);
             } else
             {
                 System.out.println("Translating a vanilla packet to snapshot (" + direction + ")");
                 // create a snapshot packet from a vanilla packet
-                Snapshot.Protocol protocol = Snapshot.Protocol.GAME;
+                Snapshot.Protocol protocol = Snapshot.Protocol.GAME; // FIX ME?
                 ProtocolDirection protocolDirection = protocol.getProtocolDirection(direction);
                 translation = vanilla.get((short) (int) definedPacket.getId()).get(direction == Direction.TO_CLIENT ? 0 : 1);
 
-                ByteBuf newBuffer = Unpooled.buffer();
-                newBuffer.writeByte(definedPacket.getId());
-                definedPacket.write(newBuffer);
+                // make a buf of the packet's data if the packet was instantiated via api
+                if ( definedPacket.getBuf() == null )
+                {
+                    ByteBuf newBuf = Unpooled.buffer();
+                    newBuf.writeByte(translation.getVanillaPacketId());
+                    definedPacket.write(newBuf);
+                    definedPacket.setBuf(newBuf);
+                }
 
-                translated = translation.translateToSnapshot(newBuffer);
-                translatedPacket = protocolDirection.createPacket(translation.getSnapshotPacketId(), translated);
+                // get the full translated packet bytebuf and just the data bytebuf
+                translated = translation.translateToSnapshot(definedPacket.getBuf());
+                translatedData = translated.copy();
+                PacketUtil.readVarInt(translatedData);
+
+                // form a snapshot packet (we have to read in this one but not in the vanilla one)
                 newPacketId = translation.getSnapshotPacketId();
+                translatedPacket = protocolDirection.createPacket(translation.getSnapshotPacketId(), translatedData);
+                translatedPacket.read( translatedData );
             }
 
             // if there isn't a defined packet for the translation, return a packet wrapper
             if ( translatedPacket == null )
             {
-                System.out.println("Had to revert translated packet to a packet wrapper");
+                System.out.println("WARNING: Had to revert translated packet to a packet wrapper");
                 return new PacketWrapper(newPacketId, null, translated, !definedPacket.isSnapshot() );
             } else
             {
+                System.out.println("SUCCESS TRANSLATION: " + translatedPacket.getClass() + " " + translatedPacket.toString());
                 return translatedPacket;
             }
         } else if ( packet instanceof PacketWrapper )
         {
             PacketWrapper definedWrapper = (PacketWrapper) packet;
             PacketWrapper translatedWrapper;
+            DefinedPacket translatedPacket = null;
+
+            if ( definedWrapper.getPacket() != null )
+            {
+                Object result = translate( definedWrapper.getPacket(), direction );
+                if ( result instanceof DefinedPacket )
+                {
+                    translatedPacket = (DefinedPacket) result;
+                }
+            }
 
             if ( definedWrapper.isSnapshot() )
             {
-                System.out.println("Translating a snapshot wrapper to vanilla (" + definedWrapper.getDirection() + ")");
                 if ( definedWrapper.getDirection() == Direction.TO_CLIENT )
                 {
                     translation = clientBound.get(definedWrapper.getPacketId());
@@ -150,18 +183,18 @@ public class Translations {
                 }
 
                 translated = translation.translateToVanilla(definedWrapper.getBufCopy());
-                translatedWrapper = new PacketWrapper(translation.getVanillaPacketId(), null, translated, false);
+                translatedWrapper = new PacketWrapper(translation.getVanillaPacketId(), translatedPacket, translated, false);
             } else
             {
-                System.out.println("Translating a vanilla wrapper to snapshot (" + direction + ")");
                 Preconditions.checkState(direction != null, "direction can not be null when translating a vanilla packet");
                 translation = vanilla.get((short) (int) definedWrapper.getPacketId()).get(direction == Direction.TO_CLIENT ? 0 : 1);
 
                 translated = translation.translateToSnapshot(definedWrapper.getBufCopy());
-                translatedWrapper = new PacketWrapper(translation.getSnapshotPacketId(), null, translated, true);
+                translatedWrapper = new PacketWrapper(translation.getSnapshotPacketId(), translatedPacket, translated, true);
                 translatedWrapper.setDirection(direction);
             }
 
+            System.out.println("SUCESS PACKET WRAPPER: " + translation.getTranslator() + " VANILLA: " + translation.getVanillaPacketId() + " SNAPSHOT: " + translation.getSnapshotPacketId() + " PACKET: " + (translatedPacket != null ? translatedPacket.toString() : "") + " TRANSLATOR: " + translation.getTranslator());
             return translatedWrapper;
         }
 

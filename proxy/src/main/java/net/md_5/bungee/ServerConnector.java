@@ -28,6 +28,7 @@ import net.md_5.bungee.protocol.Forge;
 import net.md_5.bungee.protocol.MinecraftOutput;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.forge.Forge1Login;
+import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 
 public class ServerConnector extends ServerConnectorAbstract
 {
@@ -44,8 +45,6 @@ public class ServerConnector extends ServerConnectorAbstract
     public void handle(Packet1Login login) throws Exception
     {
         Preconditions.checkState( thisState == State.LOGIN, "Not exepcting LOGIN" );
-
-        System.out.println("Got login");
 
         ServerConnection server = new ServerConnection( ch, target );
         ServerConnectedEvent event = new ServerConnectedEvent( user, server );

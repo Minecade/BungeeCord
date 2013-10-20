@@ -18,6 +18,7 @@ public abstract class DefinedPacket
     @Getter
     @Setter
     private Direction direction;
+    @Getter
     @Setter
     private ByteBuf buf;
 

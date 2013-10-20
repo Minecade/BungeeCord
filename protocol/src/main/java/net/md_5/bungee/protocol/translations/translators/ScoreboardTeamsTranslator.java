@@ -31,7 +31,7 @@ public class ScoreboardTeamsTranslator extends Translator
 
     public void vanillaToSnapshot(ByteBuf vanilla, ByteBuf snapshot)
     {
-        PacketUtil.writeSnapshotString(PacketUtil.readSnapshotString(vanilla), snapshot);
+        PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
         int mode = vanilla.readByte();
         snapshot.writeByte(mode);
         if ( mode == 0 || mode == 2 )
@@ -39,7 +39,7 @@ public class ScoreboardTeamsTranslator extends Translator
             PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
             PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
             PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
-            vanilla.writeBoolean(snapshot.readBoolean());
+            snapshot.writeBoolean(vanilla.readBoolean());
         }
         if ( mode == 0 || mode == 3 || mode == 4 )
         {

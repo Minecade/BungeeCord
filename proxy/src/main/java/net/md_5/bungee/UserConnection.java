@@ -112,6 +112,12 @@ public final class UserConnection implements ProxiedPlayer
             if ( ch.isSnapshot() )
             {
                 Object newPacket = Translations.translate(packet, Direction.TO_CLIENT);
+                System.out.println("Translation (channel is snapshot): " + newPacket.getClass());
+                if(newPacket instanceof net.md_5.bungee.protocol.packet.snapshot.game.Login)
+                {
+                    net.md_5.bungee.protocol.packet.snapshot.game.Login test = (net.md_5.bungee.protocol.packet.snapshot.game.Login) newPacket;
+                    System.out.println(test.toString());
+                }
                 ch.write( newPacket );
             } else
             {
