@@ -4,23 +4,21 @@ import io.netty.buffer.ByteBuf;
 import net.md_5.bungee.protocol.PacketUtil;
 import net.md_5.bungee.protocol.translations.Translator;
 
-public class SpawnPlayerTranslator extends Translator
+public class SpawnMobTranslator extends Translator
 {
     private static final MetadataTranslator metadata = new MetadataTranslator();
 
     public void snapshotToVanilla(ByteBuf snapshot, ByteBuf vanilla)
     {
         vanilla.writeInt(PacketUtil.readVarInt(snapshot));
-        PacketUtil.readSnapshotString(snapshot);
-        PacketUtil.writeVanillaString(PacketUtil.readSnapshotString(snapshot), vanilla);
+        vanilla.writeByte(snapshot.readUnsignedByte());
         metadata.snapshotToVanilla(snapshot, vanilla);
     }
 
     public void vanillaToSnapshot(ByteBuf vanilla, ByteBuf snapshot)
     {
         PacketUtil.writeVarInt(vanilla.readInt(), snapshot);
-        PacketUtil.writeSnapshotString("fca0357066a24b68b8c28a76b4f21514", snapshot); // TODO - UUID?
-        PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
+        snapshot.writeByte(vanilla.readByte());
         metadata.vanillaToSnapshot(vanilla, snapshot);
     }
 }

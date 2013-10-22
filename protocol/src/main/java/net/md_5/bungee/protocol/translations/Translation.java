@@ -37,7 +37,6 @@ public class Translation {
     public ByteBuf translateToVanilla(ByteBuf in) {
         ByteBuf out = Unpooled.buffer(in.readableBytes());
 
-        PacketUtil.readVarInt(in);
         int snapshotPacketId = PacketUtil.readVarInt(in);
         Preconditions.checkState(snapshotPacketId == this.snapshotPacketId, "Snapshot packet ids to not match (" + snapshotPacketId + " does not match expected " + this.snapshotPacketId + ")");
 

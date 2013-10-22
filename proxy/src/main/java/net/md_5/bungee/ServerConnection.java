@@ -30,7 +30,7 @@ public class ServerConnection implements Server
         public void sendPacket(DefinedPacket packet)
         {
             System.out.println("Sending definedPacket to server. Channel Snapshot: " + ch.isSnapshot() + " - Packet Snapshot: " + packet.isSnapshot());
-            if ( ch.isSnapshot() )
+            if ( packet.isSnapshot() != ch.isSnapshot() )
             {
                 Object newPacket = Translations.translate(packet, Direction.TO_SERVER);
                 ch.write( newPacket );
@@ -44,7 +44,7 @@ public class ServerConnection implements Server
     public void sendPacket( PacketWrapper packet )
     {
         System.out.println("Sending packetWrapper to server. Channel Snapshot: " + ch.isSnapshot() + " - Packet Snapshot: " + packet.isSnapshot());
-        if ( ch.isSnapshot() )
+        if ( packet.isSnapshot() != ch.isSnapshot() )
         {
             Object newPacket = Translations.translate(packet, Direction.TO_SERVER);
             ch.write( newPacket );

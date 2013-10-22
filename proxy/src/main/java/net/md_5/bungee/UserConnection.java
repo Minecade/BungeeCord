@@ -109,7 +109,7 @@ public final class UserConnection implements ProxiedPlayer
         public void sendPacket(DefinedPacket packet)
         {
             System.out.println("Sending " + packet.getClass() + " to user. Channel Snapshot: " + ch.isSnapshot() + " - Packet Snapshot: " + packet.isSnapshot());
-            if ( ch.isSnapshot() )
+            if ( packet.isSnapshot() != ch.isSnapshot() )
             {
                 Object newPacket = Translations.translate(packet, Direction.TO_CLIENT);
                 System.out.println("Translation (channel is snapshot): " + newPacket.getClass());
@@ -155,7 +155,7 @@ public final class UserConnection implements ProxiedPlayer
     public void sendPacket(PacketWrapper packet)
     {
         System.out.println("Sending packetWrapper to user. Channel Snapshot: " + ch.isSnapshot() + " - Packet Snapshot: " + packet.isSnapshot());
-        if ( ch.isSnapshot() )
+        if ( packet.isSnapshot() != ch.isSnapshot() )
         {
             Object newPacket = Translations.translate(packet, Direction.TO_CLIENT);
             ch.write( newPacket );

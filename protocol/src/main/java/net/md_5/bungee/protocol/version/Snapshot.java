@@ -76,6 +76,7 @@ public class Snapshot implements MinecraftProtocol
                 newPacket.setId(id);
                 newPacket.setDirection(direction);
                 newPacket.setBuf(buf);
+                newPacket.setSnapshot(true);
 
                 return newPacket;
             } catch ( ReflectiveOperationException ex )

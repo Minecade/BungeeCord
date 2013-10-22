@@ -41,7 +41,7 @@ public class DownstreamBridge extends DownstreamBridgeAbstract
     {
         if ( !server.isObsolete() )
         {
-            EntityMap.rewrite( packet.getBufRaw(), con.getServerEntityId(), con.getClientEntityId() );
+            // EntityMap.rewrite( packet.getBufRaw(), con.getServerEntityId(), con.getClientEntityId() );
             con.sendPacket( packet );
         }
     }
