@@ -252,8 +252,8 @@ public class Translations {
 
         addTranslation(new Translation(0x11, Direction.TO_CLIENT, 0x0A, new UseBedTranslator()));
 
-        addTranslation(new Translation(0x12, Direction.TO_CLIENT, 0x0B));
-        addTranslation(new Translation(0x12, Direction.TO_SERVER, 0x0A));
+        addTranslation(new Translation(0x12, Direction.TO_CLIENT, 0x0B, new AnimationTranslator()));
+        addTranslation(new Translation(0x12, Direction.TO_SERVER, 0x0A, new AnimationTranslator2()));
 
         addTranslation(new Translation(0x13, Direction.TO_SERVER, 0x0B));
 
@@ -366,7 +366,7 @@ public class Translations {
 
         addTranslation(new Translation(0xCC, Direction.TO_SERVER, 0x15, new ClientSettingsTranslator()));
 
-        addTranslation(new Translation(0xCD, Direction.TO_SERVER, 0x16));
+        addTranslation(new Translation(0xCD, Direction.TO_SERVER, 0x16, new ClientStatusTranslator()));
 
         addTranslation(new Translation(0xCE, Direction.TO_CLIENT, 0x3B, new ScoreboardObjectiveTranslator()));
 

@@ -12,6 +12,15 @@ public class SpawnMobTranslator extends Translator
     {
         vanilla.writeInt(PacketUtil.readVarInt(snapshot));
         vanilla.writeByte(snapshot.readUnsignedByte());
+        vanilla.writeInt(snapshot.readInt());
+        vanilla.writeInt(snapshot.readInt());
+        vanilla.writeInt(snapshot.readInt());
+        vanilla.writeByte(snapshot.readByte());
+        vanilla.writeByte(snapshot.readByte());
+        vanilla.writeByte(snapshot.readByte());
+        vanilla.writeShort(snapshot.readShort());
+        vanilla.writeShort(snapshot.readShort());
+        vanilla.writeShort(snapshot.readShort());
         metadata.snapshotToVanilla(snapshot, vanilla);
     }
 
@@ -19,6 +28,15 @@ public class SpawnMobTranslator extends Translator
     {
         PacketUtil.writeVarInt(vanilla.readInt(), snapshot);
         snapshot.writeByte(vanilla.readByte());
+        snapshot.writeInt(vanilla.readInt());
+        snapshot.writeInt(vanilla.readInt());
+        snapshot.writeInt(vanilla.readInt());
+        snapshot.writeByte(vanilla.readByte());
+        snapshot.writeByte(vanilla.readByte());
+        snapshot.writeByte(vanilla.readByte());
+        snapshot.writeShort(vanilla.readShort());
+        snapshot.writeShort(vanilla.readShort());
+        snapshot.writeShort(vanilla.readShort());
         metadata.vanillaToSnapshot(vanilla, snapshot);
     }
 }

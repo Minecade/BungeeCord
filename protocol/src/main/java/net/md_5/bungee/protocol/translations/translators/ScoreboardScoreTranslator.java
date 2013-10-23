@@ -9,16 +9,33 @@ public class ScoreboardScoreTranslator extends Translator
     public void snapshotToVanilla(ByteBuf snapshot, ByteBuf vanilla)
     {
         PacketUtil.writeVanillaString(PacketUtil.readSnapshotString(snapshot), vanilla);
-        vanilla.writeByte(snapshot.readByte());
-        PacketUtil.writeVanillaString(PacketUtil.readSnapshotString(snapshot), vanilla);
-        vanilla.writeInt(snapshot.readInt());
+        int action = snapshot.readByte();
+        String scoreName = PacketUtil.readSnapshotString(snapshot);
+        int value = snapshot.readInt();
+
+        vanilla.writeByte(action);
+        if ( action != 1 )
+        {
+            PacketUtil.writeVanillaString(scoreName, vanilla);
+            vanilla.writeInt(value);
+        }
     }
 
     public void vanillaToSnapshot(ByteBuf vanilla, ByteBuf snapshot)
     {
         PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
-        snapshot.writeByte(vanilla.readByte());
-        PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
-        snapshot.writeInt(vanilla.readInt());
+        int action = vanilla.readByte();
+        String scoreName = "";
+        int value = 0;
+
+        snapshot.writeByte(action);
+        if ( action != 1 )
+        {
+            scoreName = PacketUtil.readVanillaString(vanilla);
+            value = vanilla.readInt();
+        }
+
+        PacketUtil.writeSnapshotString(scoreName, snapshot);
+        snapshot.writeInt(value);
     }
 }
