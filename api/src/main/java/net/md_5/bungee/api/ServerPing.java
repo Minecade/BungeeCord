@@ -17,7 +17,7 @@ public class ServerPing
     public ServerPing(byte protocolVersion, String gameVersion, String motd, int currentPlayers, int maxPlayers)
     {
         this.version = new Protocol(gameVersion, protocolVersion);
-        this.players = new Players(currentPlayers, maxPlayers);
+        this.players = new Players(maxPlayers, currentPlayers);
         this.description = motd;
     }
 
