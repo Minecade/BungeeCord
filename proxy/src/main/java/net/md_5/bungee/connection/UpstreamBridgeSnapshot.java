@@ -8,7 +8,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.protocol.PacketWrapper;
-import net.md_5.bungee.protocol.packet.snapshot.*;
 import net.md_5.bungee.protocol.packet.snapshot.game.*;
 
 public class UpstreamBridgeSnapshot extends UpstreamBridgeAbstract

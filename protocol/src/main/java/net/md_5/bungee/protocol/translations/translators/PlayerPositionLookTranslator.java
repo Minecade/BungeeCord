@@ -13,8 +13,6 @@ public class PlayerPositionLookTranslator extends Translator
         vanilla.writeDouble(y + 1.6200000047683716D); // stance - todo - a better value?
         vanilla.writeDouble(y);
 
-        System.out.println("NOTICEME: HELLO");
-
         finish(snapshot, vanilla);
     }
 

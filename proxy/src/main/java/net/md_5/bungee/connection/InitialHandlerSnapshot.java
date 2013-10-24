@@ -98,16 +98,14 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
             }
         };
 
-        System.out.println(this.handshake.getProtocolVersion() + " - " + this.handshake.getRequestedProtocol());
-
         if ( forced != null && listener.isPingPassthrough() )
         {
             forced.ping( pingBack );
         } else
         {
             pingBack.done( new ServerPing(
-                    new ServerPing.Protocol( bungee.getGameVersion(version), bungee.getProtocolVersion() ),
-                    new ServerPing.Players( bungee.getOnlineCount(), listener.getMaxPlayers() ),
+                    new ServerPing.Protocol( bungee.getGameVersion(version), bungee.getProtocolVersion(version) ),
+                    new ServerPing.Players( listener.getMaxPlayers(), bungee.getOnlineCount() ),
                     motd, "" ),
                     null );
         }
@@ -149,8 +147,6 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
             default:
                 throw new IllegalArgumentException( "Cannot request protocol " + handshake.getRequestedProtocol() );
         }
-
-        System.out.println(thisState);
     }
 
     @Override
@@ -158,9 +154,6 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
     {
         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
         this.loginRequest = loginRequest;
-
-        System.out.println("Init: " + handshake.getProtocolVersion());
-        System.out.println("Result: " + bungee.getProtocolVersion(version));
 
         if ( handshake.getProtocolVersion() > bungee.getProtocolVersion(version) )
         {
@@ -196,8 +189,6 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
 
         unsafe().sendPacket( request = EncryptionUtil.snapshotEncryptRequest( this.onlineMode ) );
         thisState = State.ENCRYPT;
-
-        System.out.println(thisState);
     }
 
     @Override
@@ -211,7 +202,6 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
 
         if ( this.onlineMode )
         {
-            System.out.println("online mode!");
             String encName = URLEncoder.encode( InitialHandlerSnapshot.this.getName(), "UTF-8" );
 
             MessageDigest sha = MessageDigest.getInstance( "SHA-1" );
@@ -237,7 +227,6 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
                         if ( obj != null )
                         {
                             UUID = obj.getId();
-                            System.out.println(UUID);
                             finish();
                             return;
                         }

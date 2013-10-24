@@ -24,13 +24,11 @@ public class VersionDetector extends ByteToMessageDecoder
 
         if ( packetId == 2 || packetId == 254 )
         {
-            System.out.println("VANILLA DETECTED");
             PipelineUtils.VANILLA_INIT.initChannel(ctx.channel());
 
             ctx.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( ProxyServer.getInstance(), ctx.channel().attr( PipelineUtils.LISTENER ).get() ) );
         }
         else {
-            System.out.println("SNAPSHOT DETECTED");
             PipelineUtils.SNAPSHOT_INIT.initChannel(ctx.channel());
 
             ctx.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandlerSnapshot( ProxyServer.getInstance(), ctx.channel().attr( PipelineUtils.LISTENER ).get() ) );

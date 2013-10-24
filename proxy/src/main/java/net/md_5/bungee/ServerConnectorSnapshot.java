@@ -12,15 +12,12 @@ import net.md_5.bungee.api.score.Objective;
 import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.api.score.Team;
 import net.md_5.bungee.connection.CancelSendSignal;
-import net.md_5.bungee.connection.DownstreamBridge;
 import net.md_5.bungee.connection.DownstreamBridgeSnapshot;
 import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.MinecraftOutput;
-import net.md_5.bungee.protocol.packet.snapshot.*;
 import net.md_5.bungee.protocol.packet.snapshot.game.*;
 import net.md_5.bungee.protocol.packet.snapshot.login.LoginSuccess;
-import net.md_5.bungee.protocol.version.Snapshot;
 import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 
 import com.google.common.base.Preconditions;

@@ -39,11 +39,8 @@ public class EncryptionRequest extends DefinedPacket
     @Override
     public void write(ByteBuf buf)
     {
-        System.out.println("Writing string " + serverId);
         writeString( serverId, buf );
-        System.out.println("Writing array " + publicKey);
         writeArray( publicKey, buf );
-        System.out.println("Writing array" + verifyToken);
         writeArray( verifyToken, buf );
     }
 

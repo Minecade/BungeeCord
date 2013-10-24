@@ -1,15 +1,6 @@
 package net.md_5.bungee;
 
 import java.net.InetSocketAddress;
-import java.util.Collection;
-
-import net.md_5.bungee.netty.ChannelWrapper;
-import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.packet.*;
-import net.md_5.bungee.protocol.packet.snapshot.*;
-import net.md_5.bungee.protocol.packet.snapshot.game.*;
-import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionRequest;
-import net.md_5.bungee.protocol.packet.snapshot.login.EncryptionResponse;
 
 /**
  * Series of utility classes to perform various operations.

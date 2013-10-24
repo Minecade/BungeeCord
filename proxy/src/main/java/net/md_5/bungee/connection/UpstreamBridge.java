@@ -2,7 +2,6 @@ package net.md_5.bungee.connection;
 
 import net.md_5.bungee.EntityMap;
 import net.md_5.bungee.UserConnection;
-import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;

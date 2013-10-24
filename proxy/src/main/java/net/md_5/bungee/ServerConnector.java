@@ -28,7 +28,6 @@ import net.md_5.bungee.protocol.Forge;
 import net.md_5.bungee.protocol.MinecraftOutput;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.forge.Forge1Login;
-import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 
 public class ServerConnector extends ServerConnectorAbstract
 {
@@ -142,13 +141,7 @@ public class ServerConnector extends ServerConnectorAbstract
 
             user.setServer( server );
 
-            if( false )
-            {
-                ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridgeSnapshot( bungee, user, server ) );
-            } else
-            {
-                ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
-            }
+            ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
         }
 
         bungee.getPluginManager().callEvent( new ServerSwitchEvent( user ) );

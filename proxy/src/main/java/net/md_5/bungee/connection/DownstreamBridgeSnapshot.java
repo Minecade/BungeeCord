@@ -18,7 +18,6 @@ import net.md_5.bungee.api.score.Score;
 import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.api.score.Team;
 import net.md_5.bungee.protocol.PacketWrapper;
-import net.md_5.bungee.protocol.packet.snapshot.*;
 import net.md_5.bungee.protocol.packet.snapshot.game.*;
 
 public class DownstreamBridgeSnapshot extends DownstreamBridgeAbstract
@@ -35,11 +34,6 @@ public class DownstreamBridgeSnapshot extends DownstreamBridgeAbstract
         if ( !server.isObsolete() )
         {
             // EntityMap.rewrite( packet.buf, con.getServerEntityId(), con.getClientEntityId() );
-            if(packet.getPacket() != null) {
-                System.out.println("Packet " + packet.getPacket().getClass());
-            } else {
-                System.out.println("Null packet " + packet);
-            }
             con.sendPacket( packet );
         }
     }

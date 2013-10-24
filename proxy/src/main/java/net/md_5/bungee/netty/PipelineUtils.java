@@ -6,17 +6,12 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.AttributeKey;
-import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.BungeeServerInfo;
 import net.md_5.bungee.UserConnection;
-import net.md_5.bungee.connection.InitialHandler;
-import net.md_5.bungee.connection.InitialHandlerSnapshot;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.protocol.MinecraftProtocol;
-import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.snapshot.MinecraftDecoder;
 import net.md_5.bungee.protocol.snapshot.MinecraftEncoder;
 import net.md_5.bungee.protocol.snapshot.Varint21FrameDecoder;
@@ -36,8 +31,6 @@ public class PipelineUtils
         @Override
         protected void initChannel(Channel ch) throws Exception
         {
-
-            System.out.println("VERSION DECODER ADDED");
             ch.pipeline().addLast( VERSION_DECODER, new VersionDetector() );
         }
     };

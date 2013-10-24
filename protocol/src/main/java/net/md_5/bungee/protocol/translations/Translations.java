@@ -85,8 +85,6 @@ public class Translations {
 
             if ( definedPacket.isSnapshot() )
             {
-                System.out.println("Translating a snapshot packet to vanilla (" + definedPacket.getDirection() + ")");
-
                 // create a vanilla packet from a snapshot packet
                 if ( definedPacket.getDirection() == Direction.TO_CLIENT)
                 {
@@ -118,7 +116,6 @@ public class Translations {
                 translatedPacket = Vanilla.getInstance().read(translation.getVanillaPacketId(), translatedData);
             } else
             {
-                System.out.println("Translating a vanilla packet to snapshot (" + direction + ")");
                 // create a snapshot packet from a vanilla packet
                 Snapshot.Protocol protocol = Snapshot.Protocol.GAME; // FIX ME?
                 ProtocolDirection protocolDirection = protocol.getProtocolDirection(direction);
@@ -148,11 +145,8 @@ public class Translations {
                     translatedPacket = protocolDirection.createPacket(translation.getSnapshotPacketId(), translatedData);
                     translatedPacket.read( translatedData );
                 } catch( BadPacketException e) {
-                    System.out.println("WARNING: No packet for this type");
                 }
             }
-
-            System.out.println("SUCESS TRANSLATION: " + translation.getTranslator() + " VANILLA: " + translation.getVanillaPacketId() + " SNAPSHOT: " + translation.getSnapshotPacketId() + " PACKET: " + (translatedPacket != null ? translatedPacket.toString() : "") + " TRANSLATOR: " + translation.getTranslator());
 
             // if there isn't a defined packet for the translation, return a packet wrapper
             if ( translatedPacket == null )
@@ -206,7 +200,6 @@ public class Translations {
                 translatedWrapper.setDirection(direction);
             }
 
-            System.out.println("SUCESS PACKET WRAPPER: " + translation.getTranslator() + " VANILLA: " + translation.getVanillaPacketId() + " SNAPSHOT: " + translation.getSnapshotPacketId() + " PACKET: " + (translatedPacket != null ? translatedPacket.toString() : "") + " TRANSLATOR: " + translation.getTranslator());
             return translatedWrapper;
         }
 

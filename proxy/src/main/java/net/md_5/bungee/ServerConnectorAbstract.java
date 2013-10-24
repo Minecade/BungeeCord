@@ -11,7 +11,6 @@ import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.protocol.packet.Packet2Handshake;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
-import net.md_5.bungee.protocol.version.Snapshot;
 import net.md_5.bungee.protocol.version.Snapshot.Protocol;
 
 @RequiredArgsConstructor
@@ -51,8 +50,6 @@ public abstract class ServerConnectorAbstract extends PacketHandler
         out.writeUTF( "Login" );
         out.writeUTF( user.getAddress().getHostString() );
         out.writeInt( user.getAddress().getPort() );
-
-        System.out.println("Server connector snapshot? " + channel.isSnapshot());
 
         //  TODO - WTF?
         if ( !channel.isSnapshot())

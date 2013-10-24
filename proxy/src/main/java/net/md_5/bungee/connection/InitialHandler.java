@@ -160,9 +160,6 @@ public class InitialHandler extends InitialHandlerAbstract implements PendingCon
         byte connectingVersion = handshake.getProtocolVersion();
         Vanilla connectedVersion = Vanilla.fromByte( connectingVersion );
 
-        System.out.println(connectingVersion);
-        System.out.println(connectedVersion.getProtocolVersion());
-
         if ( connectingVersion > connectedVersion.getProtocolVersion() )
         {
             disconnect( bungee.getTranslation( "outdated_server" ) );
