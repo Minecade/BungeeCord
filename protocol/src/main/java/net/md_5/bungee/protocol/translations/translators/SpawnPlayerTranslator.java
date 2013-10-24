@@ -13,6 +13,12 @@ public class SpawnPlayerTranslator extends Translator
         vanilla.writeInt(PacketUtil.readVarInt(snapshot));
         PacketUtil.readSnapshotString(snapshot);
         PacketUtil.writeVanillaString(PacketUtil.readSnapshotString(snapshot), vanilla);
+        vanilla.writeInt(snapshot.readInt());
+        vanilla.writeInt(snapshot.readInt());
+        vanilla.writeInt(snapshot.readInt());
+        vanilla.writeByte(snapshot.readByte());
+        vanilla.writeByte(snapshot.readByte());
+        vanilla.writeShort(snapshot.readShort());
         metadata.snapshotToVanilla(snapshot, vanilla);
     }
 
@@ -21,6 +27,12 @@ public class SpawnPlayerTranslator extends Translator
         PacketUtil.writeVarInt(vanilla.readInt(), snapshot);
         PacketUtil.writeSnapshotString("fca0357066a24b68b8c28a76b4f21514", snapshot); // TODO - UUID?
         PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
+        snapshot.writeInt(vanilla.readInt());
+        snapshot.writeInt(vanilla.readInt());
+        snapshot.writeInt(vanilla.readInt());
+        snapshot.writeByte(vanilla.readByte());
+        snapshot.writeByte(vanilla.readByte());
+        snapshot.writeShort(vanilla.readShort());
         metadata.vanillaToSnapshot(vanilla, snapshot);
     }
 }
