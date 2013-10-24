@@ -14,6 +14,7 @@ import net.md_5.bungee.protocol.packet.PacketCCSettings;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.packet.snapshot.game.ClientSettings;
 import net.md_5.bungee.protocol.translations.Translations;
+import net.md_5.bungee.protocol.version.Snapshot.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,7 @@ public class UpstreamBridge extends UpstreamBridgeAbstract
     @Override
     public void handle(PacketCCSettings settings) throws Exception
     {
-        con.setSettings( (ClientSettings) Translations.translate(settings) );
+        con.setSettings( (ClientSettings) Translations.translate(settings, Direction.TO_SERVER) );
     }
 
     @Override

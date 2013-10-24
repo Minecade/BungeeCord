@@ -247,4 +247,8 @@ public abstract class ProxyServer
      * @return the set of disabled commands
      */
     public abstract Collection<String> getDisabledCommands();
+
+    public abstract int getProtocolVersion(byte request);
+
+    public abstract String getGameVersion(byte request);
 }

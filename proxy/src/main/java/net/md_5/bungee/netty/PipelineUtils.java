@@ -37,31 +37,26 @@ public class PipelineUtils
         protected void initChannel(Channel ch) throws Exception
         {
 
-            BASE.initChannel( ch );
-            if ( true )
-            {
-                ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Snapshot.Protocol.HANDSHAKE, true ) );
-                ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Snapshot.Protocol.HANDSHAKE, true ) );
-                ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandlerSnapshot( ProxyServer.getInstance(), ch.attr( LISTENER ).get() ) );
-            } else
-            {
-                ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( ProxyServer.getInstance(), ch.attr( LISTENER ).get() ) );
-            }
+            System.out.println("VERSION DECODER ADDED");
+            ch.pipeline().addLast( VERSION_DECODER, new VersionDetector() );
         }
     };
 
     // GENERAL
     public static final Base BASE = new Base();
+    public static final VanillaInitializer VANILLA_INIT = new VanillaInitializer();
+    public static final SnapshotInitializer SNAPSHOT_INIT = new SnapshotInitializer();
     public static String BOSS_HANDLER = "inbound-boss";
     public static String TIMEOUT_HANDLER = "timeout";
     public static String ENCRYPT_HANDLER = "encrypt";
     public static String DECRYPT_HANDLER = "decrypt";
     public static String PACKET_DECODER = "packet-decoder";
     public static String PACKET_ENCODER = "packet-encoder";
+    public static String VERSION_DECODER = "version-decoder";
     // 1.6
-    private static final DefinedPacketEncoder packetEncoder = new DefinedPacketEncoder();
+    public static final DefinedPacketEncoder packetEncoder = new DefinedPacketEncoder();
     // SNAPSHOT
-    private static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
+    public static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
     public static String FRAME_DECODER = "frame-decoder";
     public static String FRAME_PREPENDER = "frame-prepender";
 
@@ -83,26 +78,37 @@ public class PipelineUtils
                 // IP_TOS is not supported (Windows XP / Windows Server 2003)
             }
 
-            MinecraftProtocol protocol = ch.attr( PROTOCOL ).get();
-            if( protocol == null )
-            {
-                protocol = Snapshot.getInstance();
-                ch.attr( PROTOCOL ).set(protocol);
-            }
-
             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
-
-            if ( (protocol instanceof Snapshot && snapshot == null) || snapshot )
-            {
-                ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
-                ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
-            } else
-            {
-                ch.pipeline().addLast( PACKET_DECODER, new PacketDecoder( (Protocol) protocol ) );
-                ch.pipeline().addLast( PACKET_ENCODER, packetEncoder );
-            }
-
-            ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
         }
     };
+
+    public final static class VanillaInitializer extends ChannelInitializer<Channel>
+    {
+        public void initChannel(Channel ch) throws Exception
+        {
+           BASE.initChannel(ch);
+           ch.attr( PipelineUtils.PROTOCOL ).set( Vanilla.getInstance() );
+
+           ch.pipeline().addLast( PipelineUtils.PACKET_DECODER, new PacketDecoder( net.md_5.bungee.protocol.version.Vanilla.getInstance() ) );
+           ch.pipeline().addLast( PipelineUtils.PACKET_ENCODER, PipelineUtils.packetEncoder );
+
+           ch.pipeline().addLast( PipelineUtils.BOSS_HANDLER, new HandlerBoss() );
+        }
+    }
+
+    public final static class SnapshotInitializer extends ChannelInitializer<Channel>
+    {
+        public void initChannel(Channel ch) throws Exception
+        {
+            BASE.initChannel(ch);
+            ch.attr( PipelineUtils.PROTOCOL ).set( Snapshot.getInstance() );
+
+            ch.pipeline().addLast( PipelineUtils.FRAME_DECODER, new Varint21FrameDecoder() );
+            ch.pipeline().addLast( PipelineUtils.FRAME_PREPENDER, PipelineUtils.framePrepender );
+            ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Snapshot.Protocol.HANDSHAKE, true ) );
+            ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Snapshot.Protocol.HANDSHAKE, true ) );
+
+            ch.pipeline().addLast( PipelineUtils.BOSS_HANDLER, new HandlerBoss() );
+        }
+    }
 }

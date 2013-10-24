@@ -122,7 +122,11 @@ public class Translations {
                 // create a snapshot packet from a vanilla packet
                 Snapshot.Protocol protocol = Snapshot.Protocol.GAME; // FIX ME?
                 ProtocolDirection protocolDirection = protocol.getProtocolDirection(direction);
-                translation = vanilla.get((short) (int) definedPacket.getId()).get(direction == Direction.TO_CLIENT ? 0 : 1);
+                translation = vanilla.get((short) (int) definedPacket.getId()).get(0);
+                if ( translation.getDirection() != direction )
+                {
+                    translation = vanilla.get((short) (int) definedPacket.getId()).get(1);
+                }
 
                 // make a buf of the packet's data if the packet was instantiated via api
                 if ( definedPacket.getBuf() == null )

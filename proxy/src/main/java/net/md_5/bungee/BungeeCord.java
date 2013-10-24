@@ -450,6 +450,34 @@ public class BungeeCord extends ProxyServer
     }
 
     @Override
+    public int getProtocolVersion(byte request)
+    {
+        switch ( request )
+        {
+            case 3:
+                return 3;
+            case 74:
+                return 74;
+            default:
+                return 78;
+        }
+    }
+
+    @Override
+    public String getGameVersion(byte request)
+    {
+        switch ( request )
+        {
+            case 3:
+                return "1.7.1";
+            case 74:
+                return "1.6.2";
+            default:
+                return "1.6.4";
+        }
+    }
+
+    @Override
     public byte getProtocolVersion()
     {
         return Vanilla.getInstance().getProtocolVersion();

@@ -13,7 +13,7 @@ public class PacketUtil {
             buf.writeChar( c );
         }
     }
-    
+
     public static String readVanillaString(ByteBuf buf) {
         short len = buf.readShort();
         char[] chars = new char[ len ];
@@ -23,14 +23,14 @@ public class PacketUtil {
         }
         return new String( chars );
     }
-    
+
     // SNAPSHOT
     public static void writeSnapshotString(String s, ByteBuf buf) {
         byte[] b = s.getBytes( Charsets.UTF_8 );
         writeVarInt( b.length, buf );
         buf.writeBytes( b );
     }
-    
+
     public static String readSnapshotString(ByteBuf buf) {
         int len = readVarInt( buf );
         byte[] b = new byte[ len ];
@@ -38,12 +38,12 @@ public class PacketUtil {
 
         return new String( b, Charsets.UTF_8 );
     }
-    
+
     public static void writeArray(byte[] b, ByteBuf buf) {
         buf.writeShort( b.length );
         buf.writeBytes( b );
     }
-    
+
     public static byte[] readArray(ByteBuf buf) {
         short len = buf.readShort();
         byte[] ret = new byte[ len ];

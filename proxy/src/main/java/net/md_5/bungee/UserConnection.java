@@ -31,19 +31,13 @@ import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.MinecraftProtocol;
 import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.Packet3Chat;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
 import net.md_5.bungee.protocol.packet.snapshot.game.ClientSettings;
-import net.md_5.bungee.protocol.snapshot.MinecraftEncoder;
-import net.md_5.bungee.protocol.snapshot.MinecraftDecoder;
 import net.md_5.bungee.protocol.translations.Translations;
-import net.md_5.bungee.protocol.version.Snapshot;
 import net.md_5.bungee.protocol.version.Snapshot.Direction;
-import net.md_5.bungee.protocol.version.Snapshot.Protocol;
-import net.md_5.bungee.protocol.version.Vanilla;
 import net.md_5.bungee.util.CaseInsensitiveSet;
 
 @RequiredArgsConstructor
@@ -229,21 +223,9 @@ public final class UserConnection implements ProxiedPlayer
             @Override
             protected void initChannel(Channel ch) throws Exception
             {
-                MinecraftProtocol protocol = getPendingConnection().getCh().getHandle().attr( PipelineUtils.PROTOCOL ).get();
-                ch.attr( PipelineUtils.PROTOCOL ).set( Vanilla.getInstance() );
+                PipelineUtils.VANILLA_INIT.initChannel(ch);
 
-                PipelineUtils.BASE.initChannel( ch, false );
-
-                if ( false )
-                {
-                    ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false ) );
-                    ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false ) );
-                    ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnectorSnapshot( bungee, UserConnection.this, target ) );
-                } else
-                {
-                    ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
-                }
-
+                ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
             }
         };
         ChannelFutureListener listener = new ChannelFutureListener()

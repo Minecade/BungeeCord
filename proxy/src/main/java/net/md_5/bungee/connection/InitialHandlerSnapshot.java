@@ -98,13 +98,15 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
             }
         };
 
+        System.out.println(this.handshake.getProtocolVersion() + " - " + this.handshake.getRequestedProtocol());
+
         if ( forced != null && listener.isPingPassthrough() )
         {
             forced.ping( pingBack );
         } else
         {
             pingBack.done( new ServerPing(
-                    new ServerPing.Protocol( bungee.getGameVersion(), bungee.getProtocolVersion() ),
+                    new ServerPing.Protocol( bungee.getGameVersion(version), bungee.getProtocolVersion() ),
                     new ServerPing.Players( bungee.getOnlineCount(), listener.getMaxPlayers() ),
                     motd, "" ),
                     null );
@@ -131,17 +133,6 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
 
         bungee.getPluginManager().callEvent( new PlayerHandshakeEvent( InitialHandlerSnapshot.this, handshake ) );
 
-        // TODO
-        /*
-        if ( handshake.getProtocolVersion() > bungee.getProtocolVersion() )
-        {
-            disconnect( bungee.getTranslation( "outdated_server" ) );
-        } else if ( handshake.getProtocolVersion() < bungee.getProtocolVersion() )
-        {
-            disconnect( bungee.getTranslation( "outdated_client" ) );
-        }
-        */
-
         switch ( handshake.getRequestedProtocol() )
         {
             case 1:
@@ -167,7 +158,16 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
         this.loginRequest = loginRequest;
 
-        System.out.println(loginRequest);
+        System.out.println(handshake.getProtocolVersion());
+        System.out.println(bungee.getProtocolVersion(version));
+
+        if ( handshake.getProtocolVersion() > bungee.getProtocolVersion(version) )
+        {
+            disconnect( bungee.getTranslation( "outdated_server" ) );
+        } else if ( handshake.getProtocolVersion() < bungee.getProtocolVersion(version) )
+        {
+            disconnect( bungee.getTranslation( "outdated_client" ) );
+        }
 
         if ( getName().length() > 16 )
         {

@@ -59,7 +59,7 @@ public class Vanilla implements Protocol
 
     public Vanilla()
     {
-        this((byte) 74, "1.6.4");
+        this((byte) 78, "1.6.4");
     }
 
     public Vanilla( final byte protocol, final String version )

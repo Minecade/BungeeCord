@@ -120,7 +120,7 @@ public class InitialHandler extends InitialHandlerAbstract implements PendingCon
             forced.ping( pingBack );
         } else
         {
-            pingBack.done( new ServerPing( Vanilla.fromByte( getVersion() ).getProtocolVersion(), bungee.getGameVersion(), motd, bungee.getOnlineCount(), listener.getMaxPlayers() ), null );
+            pingBack.done( new ServerPing( (byte) BungeeCord.getInstance().getProtocolVersion(version), BungeeCord.getInstance().getGameVersion(version), motd, bungee.getOnlineCount(), listener.getMaxPlayers() ), null );
         }
     }
 
@@ -160,8 +160,8 @@ public class InitialHandler extends InitialHandlerAbstract implements PendingCon
         byte connectingVersion = handshake.getProtocolVersion();
         Vanilla connectedVersion = Vanilla.fromByte( connectingVersion );
 
-        // set proper protocol
-        ((PacketDecoder) ch.getHandle().pipeline().get(PipelineUtils.PACKET_DECODER)).setProtocol(connectedVersion);
+        System.out.println(connectingVersion);
+        System.out.println(connectedVersion.getProtocolVersion());
 
         if ( connectingVersion > connectedVersion.getProtocolVersion() )
         {

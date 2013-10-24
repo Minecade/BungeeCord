@@ -34,6 +34,7 @@ public class PacketDecoder extends ReplayingDecoder<Void>
         // While we have enough data
         while ( true )
         {
+            System.out.println("Start index: " + in.readerIndex());
             // Store our start index
             int startIndex = in.readerIndex();
             // Run packet through framer
@@ -50,5 +51,10 @@ public class PacketDecoder extends ReplayingDecoder<Void>
             // Store our decoded message
             out.add( new PacketWrapper( packetId, packet, buf, false ) );
         }
+    }
+
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+    {
+        System.out.println(" Caught throablw " + cause.getLocalizedMessage());
     }
 }
