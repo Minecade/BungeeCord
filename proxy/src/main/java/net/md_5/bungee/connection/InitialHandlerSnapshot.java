@@ -128,6 +128,7 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
     {
         Preconditions.checkState( thisState == State.HANDSHAKE, "Not expecting HANDSHAKE" );
         this.handshake = handshake;
+        this.version = (byte) handshake.getProtocolVersion();
         this.vHost = new InetSocketAddress( handshake.getHost(), handshake.getPort() );
         bungee.getLogger().log( Level.INFO, "{0} has connected", this );
 
@@ -158,8 +159,8 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
         this.loginRequest = loginRequest;
 
-        System.out.println(handshake.getProtocolVersion());
-        System.out.println(bungee.getProtocolVersion(version));
+        System.out.println("Init: " + handshake.getProtocolVersion());
+        System.out.println("Result: " + bungee.getProtocolVersion(version));
 
         if ( handshake.getProtocolVersion() > bungee.getProtocolVersion(version) )
         {
