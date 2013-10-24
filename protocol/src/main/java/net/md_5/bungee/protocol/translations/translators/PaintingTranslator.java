@@ -8,14 +8,14 @@ public class PaintingTranslator extends Translator
 {
     public void snapshotToVanilla(ByteBuf snapshot, ByteBuf vanilla)
     {
-        vanilla.writeInt(snapshot.readInt());
+        vanilla.writeInt(PacketUtil.readVarInt(snapshot));
         PacketUtil.writeVanillaString(PacketUtil.readSnapshotString(snapshot), vanilla);
         finish(snapshot, vanilla);
     }
 
     public void vanillaToSnapshot(ByteBuf vanilla, ByteBuf snapshot)
     {
-        snapshot.writeInt(vanilla.readInt());
+        PacketUtil.writeVarInt(vanilla.readInt(), snapshot);
         PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
         finish(vanilla, snapshot);
     }
