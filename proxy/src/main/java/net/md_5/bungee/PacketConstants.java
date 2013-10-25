@@ -3,6 +3,7 @@ package net.md_5.bungee;
 import net.md_5.bungee.protocol.packet.PacketCDClientStatus;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.packet.snapshot.game.Respawn;
+import net.md_5.bungee.protocol.version.Snapshot.Direction;
 
 public class PacketConstants
 {
@@ -15,7 +16,9 @@ public class PacketConstants
 
     public static Respawn getDimSwitch(byte i)
     {
-        return new Respawn( i, (byte) 0, (byte) 0, "default" );
+       Respawn respawn = new Respawn( i, (byte) 0, (byte) 0, "default" );
+       respawn.setDirection(Direction.TO_CLIENT);
+       return respawn;
     }
 
     public static PacketCDClientStatus getClientLogin()
