@@ -110,18 +110,9 @@ public final class UserConnection implements ProxiedPlayer
             if ( packet.isSnapshot() != ch.isSnapshot() )
             {
                 Object newPacket = Translations.translate(packet, Direction.TO_CLIENT);
-                if ( newPacket instanceof DefinedPacket )
-                {
-                    System.out.println("Sending user packet ID " + ((DefinedPacket) newPacket).getId() + " - Packet: " + ((DefinedPacket) newPacket));
-                } else
-                {
-                    System.out.println("Sending user packet wrapper " + ((PacketWrapper) newPacket).getPacketId());
-                }
-
                 ch.write( newPacket );
             } else
             {
-                System.out.println("Sending user packet ID " + packet.getId() + " - Packet: " + packet);
                 ch.write( packet );
             }
         }
@@ -155,7 +146,6 @@ public final class UserConnection implements ProxiedPlayer
 
     public void sendPacket(PacketWrapper packet)
     {
-        System.out.println("Sending user packet ID " + packet.getPacketId() + " - Packet: " + packet.getPacket());
         if ( packet.isSnapshot() != ch.isSnapshot() )
         {
             Object newPacket = Translations.translate(packet, Direction.TO_CLIENT);
@@ -190,7 +180,6 @@ public final class UserConnection implements ProxiedPlayer
 
     void sendDimensionSwitch()
     {
-        System.out.println("Switch!");
         unsafe().sendPacket( PacketConstants.getDimSwitch((byte) -1) );
         unsafe().sendPacket( PacketConstants.getDimSwitch((byte) 1) );
     }

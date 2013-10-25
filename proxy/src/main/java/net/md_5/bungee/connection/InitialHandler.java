@@ -102,7 +102,7 @@ public class InitialHandler extends InitialHandlerAbstract implements PendingCon
                 {
                     result = new ServerPing( (byte) -1, "-1", "Error pinging remote server: " + Util.exception( error ), -1, -1 );
                 }
-                result = bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result ) ).getResponse();
+                result = bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result, false ) ).getResponse();
 
                 String kickMessage = ChatColor.DARK_BLUE
                         + "\00" + result.getVersion().getProtocol()

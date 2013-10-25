@@ -26,4 +26,6 @@ public class ProxyPingEvent extends Event
      * The data to respond with.
      */
     private ServerPing response;
+    
+    private boolean isSnapshot;
 }

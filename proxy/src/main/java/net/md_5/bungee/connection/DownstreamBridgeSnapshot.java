@@ -5,7 +5,6 @@ import com.google.common.io.ByteStreams;
 import java.io.DataInput;
 import java.util.Objects;
 
-import net.md_5.bungee.EntityMapSnapshot;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.Util;

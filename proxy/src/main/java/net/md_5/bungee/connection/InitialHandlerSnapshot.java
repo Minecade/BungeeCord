@@ -87,21 +87,20 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
             {
                 if ( error != null )
                 {
-                    result = new ServerPing();
-                    result.setDescription( "Error pinging remote server: " + Util.exception( error ) );
                 }
-                result = bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandlerSnapshot.this, result ) ).getResponse();
+                result = bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandlerSnapshot.this, result, true ) ).getResponse();
 
                 BungeeCord.getInstance().getConnectionThrottle().unthrottle( getAddress().getAddress() );
                 unsafe.sendPacket( new StatusResponse( BungeeCord.getInstance().gson.toJson( result ) ) );
             }
         };
 
-        pingBack.done( new ServerPing(
+        ServerPing response = new ServerPing(
                 new ServerPing.Protocol( bungee.getGameVersion(version), bungee.getProtocolVersion(version) ),
                 new ServerPing.Players( listener.getMaxPlayers(), bungee.getOnlineCount() ),
-                motd, "" ),
-                null );
+                motd, BungeeCord.getInstance().favicon );
+
+        pingBack.done( response, null );
 
         thisState = State.PING;
     }

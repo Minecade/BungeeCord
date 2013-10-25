@@ -62,15 +62,12 @@ public abstract class ServerConnectorAbstract extends PacketHandler
             channel.write( user.getPendingConnection().getHandshake() );
         }
 
-        System.out.println("Connected!");
-
         if ( channel.isSnapshot() )
         {
             channel.setProtocol( Protocol.LOGIN );
             channel.write( ((InitialHandlerSnapshot) user.getPendingConnection()).getLoginRequest() );
         }
         else {
-            System.out.println("vanillay");
             // Skip encryption if we are not using Forge
             if ( user.getPendingConnection().getForgeLogin() == null )
             {

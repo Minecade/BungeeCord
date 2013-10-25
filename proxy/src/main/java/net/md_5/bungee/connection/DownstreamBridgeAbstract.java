@@ -19,7 +19,6 @@ public class DownstreamBridgeAbstract extends PacketHandler
     @Override
     public void exception(Throwable t) throws Exception
     {
-        System.out.println("Exception!");
         ServerInfo def = bungee.getServerInfo( con.getPendingConnection().getListener().getFallbackServer() );
         if ( server.getInfo() != def )
         {
@@ -35,7 +34,6 @@ public class DownstreamBridgeAbstract extends PacketHandler
     @Override
     public void disconnected(ChannelWrapper channel) throws Exception
     {
-        System.out.println("Lost connection ;(");
         // We lost connection to the server
         server.getInfo().removePlayer( con );
         if ( bungee.getReconnectHandler() != null )

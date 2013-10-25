@@ -2,26 +2,18 @@ package net.md_5.bungee.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 
 /**
  * Represents the standard list data returned by opening a server in the
  * Minecraft client server list, or hitting it with a packet 0xFE.
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ServerPing
 {
-    // backwards compat
-    public ServerPing(byte protocolVersion, String gameVersion, String motd, int currentPlayers, int maxPlayers)
-    {
-        this.version = new Protocol(gameVersion, protocolVersion);
-        this.players = new Players(maxPlayers, currentPlayers);
-        this.description = motd;
-    }
-
-    private Protocol version;
+    private final Protocol version;
     
     @Data
     @AllArgsConstructor
@@ -31,7 +23,7 @@ public class ServerPing
         private int protocol;
     }
     
-    private Players players;
+    private final Players players;
     
     @Data
     @AllArgsConstructor
@@ -41,10 +33,21 @@ public class ServerPing
         private int online;
     }
     
-    private String description;
-    private String favicon;
-    
+    private final String description;
+    private final String favicon;
+
+    @Getter
+    public boolean snapshot;
+
     // backwards compat
+    public ServerPing(byte protocolVersion, String gameVersion, String motd, int currentPlayers, int maxPlayers)
+    {
+        this.version = new Protocol(gameVersion, protocolVersion);
+        this.players = new Players(maxPlayers, currentPlayers);
+        this.description = motd;
+        this.favicon = "";
+    }
+
     public byte getProtocolVersion()
     {
         return (byte) version.protocol;
