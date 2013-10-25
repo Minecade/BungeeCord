@@ -43,4 +43,30 @@ public class ServerPing
     
     private String description;
     private String favicon;
+    
+    // backwards compat
+    public byte getProtocolVersion()
+    {
+        return (byte) version.protocol;
+    }
+    
+    public String getGameVersion()
+    {
+        return version.name;
+    }
+    
+    public String getMotd()
+    {
+        return description;
+    }
+    
+    public int getCurrentPlayers()
+    {
+        return players.online;
+    }
+    
+    public int getMaxPlayers()
+    {
+        return players.max;
+    }
 }
