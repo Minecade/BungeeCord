@@ -78,8 +78,7 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
     {
         Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
 
-        ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
-        final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
+        final String motd = listener.getMotd();
 
         Callback<ServerPing> pingBack = new Callback<ServerPing>()
         {
@@ -98,17 +97,11 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
             }
         };
 
-        if ( forced != null && listener.isPingPassthrough() )
-        {
-            forced.ping( pingBack );
-        } else
-        {
-            pingBack.done( new ServerPing(
-                    new ServerPing.Protocol( bungee.getGameVersion(version), bungee.getProtocolVersion(version) ),
-                    new ServerPing.Players( listener.getMaxPlayers(), bungee.getOnlineCount() ),
-                    motd, "" ),
-                    null );
-        }
+        pingBack.done( new ServerPing(
+                new ServerPing.Protocol( bungee.getGameVersion(version), bungee.getProtocolVersion(version) ),
+                new ServerPing.Players( listener.getMaxPlayers(), bungee.getOnlineCount() ),
+                motd, "" ),
+                null );
 
         thisState = State.PING;
     }
