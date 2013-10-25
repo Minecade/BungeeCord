@@ -464,8 +464,8 @@ public class BungeeCord extends ProxyServer
     {
         switch ( request )
         {
-            case 3:
-                return 3;
+	    case 4:
+		return 4;
             case 74:
                 return 74;
             default:
@@ -478,8 +478,8 @@ public class BungeeCord extends ProxyServer
     {
         switch ( request )
         {
-            case 3:
-                return "1.7.1";
+	    case 4:
+		return "1.7.2";
             case 74:
                 return "1.6.2";
             default:
