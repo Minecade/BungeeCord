@@ -84,23 +84,19 @@ public class UpstreamBridgeSnapshot extends UpstreamBridgeAbstract
     @Override
     public void handle(ClientStatus status) throws Exception
     {
-        System.out.println("Got status with paylod " + status);
-        if ( status.getPayload() == 3 )
+        if ( !con.isAchievementGiven() && status.getPayload() == 2 )
         {
             ByteBuf achievement = Unpooled.buffer();
             PacketUtil.writeVarInt(0x37, achievement);
             PacketUtil.writeVarInt(1, achievement);
             PacketUtil.writeSnapshotString("achievement.openInventory", achievement);
-            achievement.writeInt(1);
+            PacketUtil.writeVarInt(1, achievement);
 
             PacketWrapper out = new PacketWrapper(0x37, null, achievement, true);
             out.setDirection(Direction.TO_CLIENT);
 
-            System.out.println(out);
-
             con.sendPacket(out);
-
-            throw new CancelSendSignal();
+            con.setAchievementGiven(true);
         }
     }
 

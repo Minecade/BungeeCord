@@ -96,6 +96,9 @@ public final class UserConnection implements ProxiedPlayer
     /*========================================================================*/
     @Getter
     private String displayName;
+    @Getter
+    @Setter
+    private boolean achievementGiven;
     /*========================================================================*/
     private final Unsafe unsafe = new Unsafe()
     {
