@@ -15,6 +15,7 @@ public class SoundEffectTranslator extends Translator
     public SoundEffectTranslator()
     {
         vanillaToSnapshot.put("random.fuse", "game.tnt.primed");
+        vanillaToSnapshot.put("damage.hit", "game.player.hurt");
         snapshotToVanilla = vanillaToSnapshot.inverse();
     }
 

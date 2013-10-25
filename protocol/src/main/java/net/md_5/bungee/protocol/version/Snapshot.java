@@ -151,6 +151,7 @@ public class Snapshot implements MinecraftProtocol
                 TO_SERVER.registerPacket( 0x01, Chat.class );
                 TO_SERVER.registerPacket( 0x14, TabCompleteRequest.class );
                 TO_SERVER.registerPacket( 0x15, ClientSettings.class );
+                TO_SERVER.registerPacket( 0x16, ClientStatus.class );
                 TO_SERVER.registerPacket( 0x17, PluginMessage.class );
             }
         },

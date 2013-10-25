@@ -249,8 +249,8 @@ public class Translations {
 
         addTranslation(new Translation(0x11, Direction.TO_CLIENT, 0x0A, new UseBedTranslator()));
 
-        addTranslation(new Translation(0x12, Direction.TO_CLIENT, 0x0B, new AnimationTranslator()));
-        addTranslation(new Translation(0x12, Direction.TO_SERVER, 0x0A, new AnimationTranslator2()));
+        addTranslation(new Translation(0x12, Direction.TO_CLIENT, 0x0B, new AnimationTranslatorClientbound()));
+        addTranslation(new Translation(0x12, Direction.TO_SERVER, 0x0A, new AnimationTranslatorServerbound()));
 
         addTranslation(new Translation(0x13, Direction.TO_SERVER, 0x0B));
 
