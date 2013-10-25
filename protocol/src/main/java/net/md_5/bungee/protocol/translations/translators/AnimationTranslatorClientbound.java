@@ -11,7 +11,7 @@ public class AnimationTranslatorClientbound extends Translator
 {
     private final BiMap<Integer, Integer> vanillaToSnapshot = HashBiMap.create();
     private final BiMap<Integer, Integer> snapshotToVanilla;
-    private Integer action;
+    private int action;
 
     public AnimationTranslatorClientbound()
     {
@@ -28,12 +28,16 @@ public class AnimationTranslatorClientbound extends Translator
     public void snapshotToVanilla(ByteBuf snapshot, ByteBuf vanilla)
     {
         vanilla.writeInt(PacketUtil.readVarInt(snapshot));
-        vanilla.writeByte(snapshotToVanilla.get(snapshot.readUnsignedByte()));
+        Integer result = snapshotToVanilla.get(action = snapshot.readUnsignedByte());
+        vanilla.writeByte(result != null ? result : action);
+        if ( result == null ) System.out.println("S2V: null for " + action);
     }
 
     public void vanillaToSnapshot(ByteBuf vanilla, ByteBuf snapshot)
     {
         PacketUtil.writeVarInt(vanilla.readInt(), snapshot);
-        snapshot.writeByte(vanillaToSnapshot.get(vanilla.readByte()));
+        Integer result = vanillaToSnapshot.get(action = vanilla.readByte());
+        snapshot.writeByte(result != null ? result : action);
+        if ( result == null ) System.out.println("V2S: null for " + action);
     }
 }

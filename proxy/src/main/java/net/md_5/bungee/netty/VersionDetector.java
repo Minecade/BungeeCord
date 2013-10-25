@@ -18,10 +18,6 @@ public class VersionDetector extends ByteToMessageDecoder
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
     {
-        if ( in.readableBytes() < 1) {
-            return;
-        }
-
         in.markReaderIndex();
         int packetId = PacketUtil.readVarInt( in );
         in.resetReaderIndex();
