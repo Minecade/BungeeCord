@@ -28,6 +28,8 @@ import net.md_5.bungee.protocol.Forge;
 import net.md_5.bungee.protocol.MinecraftOutput;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.forge.Forge1Login;
+import net.md_5.bungee.protocol.translations.Translations;
+import net.md_5.bungee.protocol.version.Snapshot.Direction;
 
 public class ServerConnector extends ServerConnectorAbstract
 {
@@ -55,25 +57,26 @@ public class ServerConnector extends ServerConnectorAbstract
         {
             while ( !packetQueue.isEmpty() )
             {
-                ch.write( packetQueue.poll() );
+                writeToChannel( packetQueue.poll() );
             }
         }
 
         for ( DefinedPacket message : user.getPendingConnection().getRegisterMessages() )
         {
-            ch.write( message );
+            writeToChannel(message);
         }
+
         if ( !sentMessages )
         {
             for ( DefinedPacket message : user.getPendingConnection().getLoginMessages() )
             {
-                ch.write( message );
+                writeToChannel(message);
             }
         }
 
         if ( user.getSettings() != null )
         {
-            ch.write( user.getSettings() );
+            writeToChannel( user.getSettings() );
         }
 
         synchronized ( user.getSwitchMutex() )
@@ -187,7 +190,7 @@ public class ServerConnector extends ServerConnectorAbstract
 
         ch.write( user.getPendingConnection().getForgeLogin() );
 
-        ch.write( PacketConstants.CLIENT_LOGIN );
+        ch.write( PacketConstants.getClientLogin() );
         thisState = State.LOGIN;
     }
 
@@ -247,6 +250,17 @@ public class ServerConnector extends ServerConnectorAbstract
                 ch.write( message );
             }
             sentMessages = true;
+        }
+    }
+
+    private void writeToChannel(DefinedPacket packet)
+    {
+        if ( packet.isSnapshot() )
+        {
+            ch.write( Translations.translate(packet, Direction.TO_SERVER) );
+        } else
+        {
+            ch.write( packet );
         }
     }
 }

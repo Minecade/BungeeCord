@@ -37,4 +37,11 @@ public class VersionDetector extends ByteToMessageDecoder
         ctx.fireChannelActive();
         ctx.pipeline().remove( this );
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+    {
+        System.out.println("Could not detect version, disconnecting");
+        ctx.close();
+    }
 }

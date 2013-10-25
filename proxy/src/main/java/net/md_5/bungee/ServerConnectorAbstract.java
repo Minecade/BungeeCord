@@ -9,6 +9,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.connection.InitialHandlerSnapshot;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.PacketHandler;
+import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.Packet2Handshake;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.version.Snapshot.Protocol;
@@ -61,16 +62,19 @@ public abstract class ServerConnectorAbstract extends PacketHandler
             channel.write( user.getPendingConnection().getHandshake() );
         }
 
+        System.out.println("Connected!");
+
         if ( channel.isSnapshot() )
         {
             channel.setProtocol( Protocol.LOGIN );
             channel.write( ((InitialHandlerSnapshot) user.getPendingConnection()).getLoginRequest() );
         }
         else {
+            System.out.println("vanillay");
             // Skip encryption if we are not using Forge
             if ( user.getPendingConnection().getForgeLogin() == null )
             {
-                channel.write( PacketConstants.CLIENT_LOGIN );
+                channel.write( PacketConstants.getClientLogin() );
             }
         }
     }

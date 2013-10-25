@@ -178,8 +178,8 @@ public final class UserConnection implements ProxiedPlayer
 
     void sendDimensionSwitch()
     {
-        unsafe().sendPacket( PacketConstants.DIM1_SWITCH );
-        unsafe().sendPacket( PacketConstants.DIM2_SWITCH );
+        unsafe().sendPacket( PacketConstants.getDimSwitch((byte) 1) );
+        unsafe().sendPacket( PacketConstants.getDimSwitch((byte) -1) );
     }
 
     public void connectNow(ServerInfo target)
