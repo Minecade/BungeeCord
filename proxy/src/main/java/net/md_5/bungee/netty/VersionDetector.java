@@ -18,13 +18,12 @@ public class VersionDetector extends ByteToMessageDecoder
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
     {
-        while(in.readableBytes() < 1);
-
         in.markReaderIndex();
-        int packetId = PacketUtil.readVarInt( in );
+        int packetId = in.readByte();
+        System.out.println(packetId);
         in.resetReaderIndex();
 
-        if ( packetId == 2 || packetId == 254 )
+        if ( packetId == -2 || packetId == 2 )
         {
             PipelineUtils.VANILLA_INIT.initChannel(ctx.channel());
 
