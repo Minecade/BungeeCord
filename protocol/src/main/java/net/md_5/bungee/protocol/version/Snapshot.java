@@ -36,8 +36,8 @@ public class Snapshot implements MinecraftProtocol
     }
 
     public static final int MAX_PACKET_ID = 0xFF;
-    public static final int PROTOCOL_VERSION = 0x00;
-    public static final String MINECRAFT_VERSION = "13w41b";
+    public static final int PROTOCOL_VERSION = 0x03;
+    public static final String MINECRAFT_VERSION = "1.7.1";
 
     @RequiredArgsConstructor
     public static class ProtocolDirection
@@ -137,6 +137,7 @@ public class Snapshot implements MinecraftProtocol
                 TO_CLIENT.registerPacket( 0x00, KeepAlive.class );
                 TO_CLIENT.registerPacket( 0x01, Login.class );
                 TO_CLIENT.registerPacket( 0x02, Chat.class );
+                TO_CLIENT.registerPacket( 0x06, UpdateHealth.class);
                 TO_CLIENT.registerPacket( 0x07, Respawn.class );
                 TO_CLIENT.registerPacket( 0x38, PlayerListItem.class );
                 TO_CLIENT.registerPacket( 0x3A, TabCompleteResponse.class );

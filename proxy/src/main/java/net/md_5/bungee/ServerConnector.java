@@ -28,6 +28,7 @@ import net.md_5.bungee.protocol.Forge;
 import net.md_5.bungee.protocol.MinecraftOutput;
 import net.md_5.bungee.protocol.packet.*;
 import net.md_5.bungee.protocol.packet.forge.Forge1Login;
+import net.md_5.bungee.protocol.packet.snapshot.game.UpdateHealth;
 import net.md_5.bungee.protocol.translations.Translations;
 import net.md_5.bungee.protocol.version.Snapshot.Direction;
 

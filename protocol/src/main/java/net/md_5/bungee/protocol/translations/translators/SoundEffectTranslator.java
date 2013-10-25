@@ -39,6 +39,8 @@ public class SoundEffectTranslator extends Translator
     {
         String original = PacketUtil.readSnapshotString(snapshot);
         String translation = snapshotToVanilla.get(original);
+        System.out.println("S2V original: " + original);
+        System.out.println("S2V translation: " + translation);
         return translation == null ? original : translation;
     }
 
@@ -46,7 +48,8 @@ public class SoundEffectTranslator extends Translator
     {
         String original = PacketUtil.readVanillaString(vanilla);
         String translation = vanillaToSnapshot.get(original);
+        System.out.println("V2S original: " + original);
+        System.out.println("V2S translation: " + translation);
         return translation == null ? original : translation;
-
     }
 }

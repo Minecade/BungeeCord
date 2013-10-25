@@ -33,9 +33,11 @@ import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.Packet3Chat;
+import net.md_5.bungee.protocol.packet.PacketCCSettings;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
 import net.md_5.bungee.protocol.packet.PacketFFKick;
 import net.md_5.bungee.protocol.packet.snapshot.game.ClientSettings;
+import net.md_5.bungee.protocol.packet.snapshot.game.Respawn;
 import net.md_5.bungee.protocol.translations.Translations;
 import net.md_5.bungee.protocol.version.Snapshot.Direction;
 import net.md_5.bungee.util.CaseInsensitiveSet;
@@ -90,7 +92,7 @@ public final class UserConnection implements ProxiedPlayer
     private int serverEntityId;
     @Getter
     @Setter
-    private ClientSettings settings;
+    private PacketCCSettings settings;
     @Getter
     private final Scoreboard serverSentScoreboard = new Scoreboard();
     /*========================================================================*/
@@ -108,9 +110,18 @@ public final class UserConnection implements ProxiedPlayer
             if ( packet.isSnapshot() != ch.isSnapshot() )
             {
                 Object newPacket = Translations.translate(packet, Direction.TO_CLIENT);
+                if ( newPacket instanceof DefinedPacket )
+                {
+                    System.out.println("Sending user packet ID " + ((DefinedPacket) newPacket).getId() + " - Packet: " + ((DefinedPacket) newPacket));
+                } else
+                {
+                    System.out.println("Sending user packet wrapper " + ((PacketWrapper) newPacket).getPacketId());
+                }
+
                 ch.write( newPacket );
             } else
             {
+                System.out.println("Sending user packet ID " + packet.getId() + " - Packet: " + packet);
                 ch.write( packet );
             }
         }
@@ -144,6 +155,7 @@ public final class UserConnection implements ProxiedPlayer
 
     public void sendPacket(PacketWrapper packet)
     {
+        System.out.println("Sending user packet ID " + packet.getPacketId() + " - Packet: " + packet.getPacket());
         if ( packet.isSnapshot() != ch.isSnapshot() )
         {
             Object newPacket = Translations.translate(packet, Direction.TO_CLIENT);
@@ -178,8 +190,9 @@ public final class UserConnection implements ProxiedPlayer
 
     void sendDimensionSwitch()
     {
-        unsafe().sendPacket( PacketConstants.getDimSwitch((byte) 1) );
+        System.out.println("Switch!");
         unsafe().sendPacket( PacketConstants.getDimSwitch((byte) -1) );
+        unsafe().sendPacket( PacketConstants.getDimSwitch((byte) 1) );
     }
 
     public void connectNow(ServerInfo target)

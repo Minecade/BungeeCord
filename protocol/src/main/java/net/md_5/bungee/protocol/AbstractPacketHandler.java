@@ -88,8 +88,8 @@ public abstract class AbstractPacketHandler
     public void handle(PacketCBTabComplete tabComplete) throws Exception
     {
     }
-    
-   
+
+
     // HANDSHAKE
     public void handle(Handshake handshake) throws Exception
     {
@@ -112,6 +112,10 @@ public abstract class AbstractPacketHandler
     {
     }
 
+    public void handle(UpdateHealth updateHealth)
+    {
+    }
+
     public void handle(Respawn respawn) throws Exception
     {
     }
@@ -125,7 +129,7 @@ public abstract class AbstractPacketHandler
     }
 
     public void handle(TabCompleteResponse tabCompleteResponse) throws Exception
-    {    
+    {
     }
 
     public void handle(ClientSettings clientSettings) throws Exception
@@ -159,7 +163,7 @@ public abstract class AbstractPacketHandler
     public void handle(PingPacket pingPacket) throws Exception
     {
     }
-    
+
     // LOGIN
     public void handle(LoginRequest loginRequest) throws Exception
     {
@@ -174,12 +178,12 @@ public abstract class AbstractPacketHandler
     }
 
     public void handle(EncryptionRequest encryptionRequest) throws Exception
-    {        
+    {
     }
 
     // STATUS
     public void handle(StatusRequest statusRequest) throws Exception
-    {        
+    {
     }
 
     public void handle(StatusResponse statusResponse) throws Exception

@@ -29,7 +29,7 @@ public class UpstreamBridge extends UpstreamBridgeAbstract
     @Override
     public void handle(PacketWrapper packet) throws Exception
     {
-        EntityMap.rewrite( packet.getBufRaw(), con.getClientEntityId(), con.getServerEntityId() );
+        EntityMap.rewrite( packet, con.getClientEntityId(), con.getServerEntityId() );
         if ( con.getServer() != null )
         {
             con.getServer().sendPacket( packet );
@@ -81,7 +81,7 @@ public class UpstreamBridge extends UpstreamBridgeAbstract
     @Override
     public void handle(PacketCCSettings settings) throws Exception
     {
-        con.setSettings( (ClientSettings) Translations.translate(settings, Direction.TO_SERVER) );
+        con.setSettings( settings );
     }
 
     @Override

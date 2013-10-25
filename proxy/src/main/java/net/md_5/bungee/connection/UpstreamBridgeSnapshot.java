@@ -6,13 +6,16 @@ import io.netty.buffer.Unpooled;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.md_5.bungee.EntityMapSnapshot;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.protocol.PacketUtil;
 import net.md_5.bungee.protocol.PacketWrapper;
+import net.md_5.bungee.protocol.packet.PacketCCSettings;
 import net.md_5.bungee.protocol.packet.snapshot.game.*;
+import net.md_5.bungee.protocol.translations.Translations;
 import net.md_5.bungee.protocol.version.Snapshot.Direction;
 
 public class UpstreamBridgeSnapshot extends UpstreamBridgeAbstract
@@ -26,7 +29,7 @@ public class UpstreamBridgeSnapshot extends UpstreamBridgeAbstract
     @Override
     public void handle(PacketWrapper packet) throws Exception
     {
-        // EntityMap.rewrite( packet.buf, con.getClientEntityId(), con.getServerEntityId() );
+        // EntityMapSnapshot.rewrite( packet, con.getClientEntityId(), con.getServerEntityId() );
         if ( con.getServer() != null )
         {
             con.getServer().sendPacket( packet );
@@ -78,7 +81,7 @@ public class UpstreamBridgeSnapshot extends UpstreamBridgeAbstract
     @Override
     public void handle(ClientSettings settings) throws Exception
     {
-        con.setSettings( settings );
+        con.setSettings( (PacketCCSettings) Translations.translate( settings, Direction.TO_SERVER ) );
     }
 
     @Override

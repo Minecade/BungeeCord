@@ -9,7 +9,6 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = false)
 public class Respawn extends DefinedPacket
 {
-
     private int dimension;
     private short difficulty;
     private short gameMode;

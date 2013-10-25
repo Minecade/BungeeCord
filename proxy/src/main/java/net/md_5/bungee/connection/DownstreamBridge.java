@@ -4,6 +4,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import java.io.DataInput;
 import java.util.Objects;
+
+import net.md_5.bungee.EntityMap;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.Util;
@@ -40,7 +42,13 @@ public class DownstreamBridge extends DownstreamBridgeAbstract
     {
         if ( !server.isObsolete() )
         {
-            // EntityMap.rewrite( packet.getBufRaw(), con.getServerEntityId(), con.getClientEntityId() );
+            try {
+                EntityMap.rewrite( packet, con.getServerEntityId(), con.getClientEntityId() );
+            } catch( Exception e )
+            {
+                e.printStackTrace();
+            }
+
             con.sendPacket( packet );
         }
     }
