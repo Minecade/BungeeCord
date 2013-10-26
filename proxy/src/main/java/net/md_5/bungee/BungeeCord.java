@@ -60,6 +60,7 @@ import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.Packet3Chat;
 import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
+import net.md_5.bungee.protocol.version.Snapshot;
 import net.md_5.bungee.protocol.version.Vanilla;
 import net.md_5.bungee.query.RemoteQuery;
 import net.md_5.bungee.tab.Custom;
@@ -464,8 +465,8 @@ public class BungeeCord extends ProxyServer
     {
         switch ( request )
         {
-	    case 4:
-		return 4;
+            case 4:
+                return 4;
             case 74:
                 return 74;
             default:
@@ -476,27 +477,19 @@ public class BungeeCord extends ProxyServer
     @Override
     public String getGameVersion(byte request)
     {
-        switch ( request )
-        {
-	    case 4:
-		return "1.7.2";
-            case 74:
-                return "1.6.2";
-            default:
-                return "1.6.4";
-        }
+        return Snapshot.MINECRAFT_VERSION;
     }
 
     @Override
     public byte getProtocolVersion()
     {
-        return Vanilla.getInstance().getProtocolVersion();
+        return Snapshot.PROTOCOL_VERSION;
     }
 
     @Override
     public String getGameVersion()
     {
-        return Vanilla.getInstance().getGameVersion();
+        return Snapshot.MINECRAFT_VERSION;
     }
 
     @Override

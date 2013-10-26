@@ -36,8 +36,8 @@ public class Snapshot implements MinecraftProtocol
     }
 
     public static final int MAX_PACKET_ID = 0xFF;
-    public static final int PROTOCOL_VERSION = 0x03;
-    public static final String MINECRAFT_VERSION = "1.7.1";
+    public static final int PROTOCOL_VERSION = 0x04;
+    public static final String MINECRAFT_VERSION = "1.7.2";
 
     @RequiredArgsConstructor
     public static class ProtocolDirection
