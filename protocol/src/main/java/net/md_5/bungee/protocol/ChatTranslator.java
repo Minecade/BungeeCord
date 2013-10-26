@@ -36,6 +36,7 @@ public class ChatTranslator
     public String translate(String message)
     {
         Component input = gson.fromJson(message, Component.class);
+        if ( input.text == null ) input.text = "";
         String[] chars = input.text.split("");
 
         List<Component> components = Lists.newArrayList();
