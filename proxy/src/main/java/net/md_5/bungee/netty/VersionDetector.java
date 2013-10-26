@@ -20,7 +20,6 @@ public class VersionDetector extends ByteToMessageDecoder
     {
         in.markReaderIndex();
         int packetId = in.readByte();
-        System.out.println(packetId);
         in.resetReaderIndex();
 
         if ( packetId == -2 || packetId == 2 )

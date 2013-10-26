@@ -19,15 +19,11 @@ import net.md_5.bungee.api.score.Position;
 import net.md_5.bungee.api.score.Score;
 import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.api.score.Team;
+import net.md_5.bungee.protocol.ChatTranslator;
 import net.md_5.bungee.protocol.PacketWrapper;
-import net.md_5.bungee.protocol.packet.Packet0KeepAlive;
-import net.md_5.bungee.protocol.packet.PacketC9PlayerListItem;
-import net.md_5.bungee.protocol.packet.PacketCEScoreboardObjective;
-import net.md_5.bungee.protocol.packet.PacketCFScoreboardScore;
-import net.md_5.bungee.protocol.packet.PacketD0DisplayScoreboard;
-import net.md_5.bungee.protocol.packet.PacketD1Team;
-import net.md_5.bungee.protocol.packet.PacketFAPluginMessage;
-import net.md_5.bungee.protocol.packet.PacketFFKick;
+import net.md_5.bungee.protocol.packet.*;
+import net.md_5.bungee.protocol.packet.snapshot.game.Chat;
+import net.md_5.bungee.protocol.version.Snapshot.Direction;
 
 public class DownstreamBridge extends DownstreamBridgeAbstract
 {
@@ -58,6 +54,19 @@ public class DownstreamBridge extends DownstreamBridgeAbstract
     {
         con.setSentPingId( alive.getRandomId() );
         con.setSentPingTime( System.currentTimeMillis() );
+    }
+
+    @Override
+    public void handle(Packet3Chat chat) throws Exception
+    {
+        if ( con.getCh().isSnapshot() )
+        {
+            Chat newChat = new Chat(ChatTranslator.getInstance().translate(chat.getMessage()));
+            newChat.setDirection(Direction.TO_CLIENT);
+            con.unsafe().sendPacket(newChat);
+
+            throw new CancelSendSignal();
+        }
     }
 
     @Override
