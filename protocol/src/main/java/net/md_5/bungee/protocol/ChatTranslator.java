@@ -147,7 +147,7 @@ public class ChatTranslator
         public Boolean underlined;
         public Boolean strikethrough;
         public Boolean obfuscated;
-        public String color;
+        public String color = "white";
 
         public List<Component> extra;
     }

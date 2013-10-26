@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.connection.CancelSendSignal;
 import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.connection.InitialHandlerSnapshot;
 import net.md_5.bungee.connection.PingHandler;
 import net.md_5.bungee.protocol.BadPacketException;
 import net.md_5.bungee.protocol.PacketWrapper;
@@ -38,7 +39,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
             channel = new ChannelWrapper( ctx );
             handler.connected( channel );
 
-            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
+            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler || handler instanceof InitialHandlerSnapshot ) )
             {
                 ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has connected", handler );
             }
@@ -52,7 +53,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
         {
             handler.disconnected( channel );
 
-            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
+            if ( !( handler instanceof InitialHandler || handler instanceof PingHandler || handler instanceof InitialHandlerSnapshot ) )
             {
                 ProxyServer.getInstance().getLogger().log( Level.INFO, "{0} has disconnected", handler );
             }
