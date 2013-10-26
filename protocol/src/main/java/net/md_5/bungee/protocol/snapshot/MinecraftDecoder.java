@@ -29,12 +29,13 @@ public class MinecraftDecoder extends ByteToMessageDecoder
         ByteBuf copy = in.copy(); // TODO
 
         int packetId = DefinedPacket.readVarInt( in );
-
         DefinedPacket packet = null;
+
         if ( prot.hasPacket( packetId ) )
         {
-            packet = prot.createPacket( packetId, copy.copy() );
+            packet = prot.createPacket( packetId, copy );
             packet.read( in );
+
             if ( in.readableBytes() != 0 )
             {
                 throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot );

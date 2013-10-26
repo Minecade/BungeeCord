@@ -11,7 +11,7 @@ public abstract class DefinedPacket
 
     @Getter
     @Setter
-    private Integer id = 0;
+    private Integer id;
     @Getter
     @Setter
     private boolean isSnapshot = false;

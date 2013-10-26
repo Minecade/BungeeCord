@@ -24,6 +24,16 @@ public class PacketCCSettings extends DefinedPacket
         super( 0xCC );
     }
 
+    public PacketCCSettings(String locale, byte viewDistance, byte chatFlags, byte difficulty, boolean showCape)
+    {
+        this();
+        this.locale = locale;
+        this.viewDistance = viewDistance;
+        this.chatFlags = chatFlags;
+        this.difficulty = difficulty;
+        this.showCape = showCape;
+    }
+
     @Override
     public void read(ByteBuf buf)
     {

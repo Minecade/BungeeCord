@@ -31,7 +31,7 @@ public class ServerConnection implements Server
         {
             if ( packet.isSnapshot() != ch.isSnapshot() )
             {
-                Object newPacket = Translations.translate(packet, Direction.TO_SERVER);
+                PacketWrapper newPacket = Translations.translate(packet, Direction.TO_SERVER);
                 ch.write( newPacket );
             } else
             {

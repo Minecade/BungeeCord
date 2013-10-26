@@ -14,7 +14,6 @@ import net.md_5.bungee.protocol.PacketUtil;
 import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.PacketCCSettings;
 import net.md_5.bungee.protocol.packet.snapshot.game.*;
-import net.md_5.bungee.protocol.translations.Translations;
 import net.md_5.bungee.protocol.version.Snapshot.Direction;
 
 public class UpstreamBridgeSnapshot extends UpstreamBridgeAbstract
@@ -80,7 +79,7 @@ public class UpstreamBridgeSnapshot extends UpstreamBridgeAbstract
     @Override
     public void handle(ClientSettings settings) throws Exception
     {
-        con.setSettings( (PacketCCSettings) Translations.translate( settings, Direction.TO_SERVER ) );
+        con.setSettings( new PacketCCSettings(settings.getLocale(), settings.getViewDistance(), settings.getChatFlags(), settings.getDifficulty(), settings.isShowCape()) );
     }
 
     @Override

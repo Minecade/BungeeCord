@@ -44,7 +44,7 @@ public class PacketDecoder extends ReplayingDecoder<Void>
             // Allocate a buffer big enough for all bytes we have read
             ByteBuf buf = in.copy( startIndex, endIndex - startIndex );
             // Save the buf to the packet
-            if ( packet != null ) packet.setBuf(buf.copy());
+            if ( packet != null ) packet.setBuf(buf);
             // Checkpoint our state incase we don't have enough data for another packet
             checkpoint();
             // Store our decoded message
