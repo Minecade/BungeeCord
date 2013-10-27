@@ -179,7 +179,14 @@ public class InitialHandlerSnapshot extends InitialHandlerAbstract implements Pe
         // unsafe().sendPacket( PacketConstants.I_AM_BUNGEE );
         // unsafe().sendPacket( PacketConstants.FORGE_MOD_REQUEST );
 
-        unsafe().sendPacket( request = EncryptionUtil.snapshotEncryptRequest( this.onlineMode ) );
+        if ( this.onlineMode )
+        {
+            unsafe().sendPacket( request = EncryptionUtil.snapshotEncryptRequest() );
+        } else
+        {
+            finish();
+        }
+
         thisState = State.ENCRYPT;
     }
 
