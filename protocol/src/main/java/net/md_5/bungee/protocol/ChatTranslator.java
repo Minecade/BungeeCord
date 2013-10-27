@@ -31,7 +31,8 @@ public class ChatTranslator
             .put("c", "red")
             .put("d", "light_purple")
             .put("e", "yellow")
-            .put("f", "white").build();
+            .put("f", "white")
+            .put("r", "white").build();
 
     public String translate(String message)
     {
