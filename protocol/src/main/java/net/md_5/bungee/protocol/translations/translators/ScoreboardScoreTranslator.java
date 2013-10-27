@@ -25,17 +25,16 @@ public class ScoreboardScoreTranslator extends Translator
     {
         PacketUtil.writeSnapshotString(PacketUtil.readVanillaString(vanilla), snapshot);
         int action = vanilla.readByte();
-        String scoreName = "";
-        int value = 0;
+        String scoreName;
+        int value;
 
         snapshot.writeByte(action);
         if ( action != 1 )
         {
             scoreName = PacketUtil.readVanillaString(vanilla);
             value = vanilla.readInt();
+            PacketUtil.writeSnapshotString(scoreName, snapshot);
+            snapshot.writeInt(value);
         }
-
-        PacketUtil.writeSnapshotString(scoreName, snapshot);
-        snapshot.writeInt(value);
     }
 }
