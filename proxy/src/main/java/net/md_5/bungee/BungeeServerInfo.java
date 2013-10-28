@@ -124,7 +124,7 @@ public class BungeeServerInfo implements ServerInfo
         new Bootstrap()
                 .channel( NioSocketChannel.class )
                 .group( BungeeCord.getInstance().eventLoops )
-                .handler( PipelineUtils.BASE )
+                .handler( PipelineUtils.VANILLA_INIT )
                 .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
                 .remoteAddress( getAddress() )
                 .connect()
