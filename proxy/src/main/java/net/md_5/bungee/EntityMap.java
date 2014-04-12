@@ -1,5 +1,8 @@
 package net.md_5.bungee;
 
+import com.fasterxml.uuid.EthernetAddress;
+import com.fasterxml.uuid.Generators;
+import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import io.netty.buffer.ByteBuf;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.LoginResult;
@@ -85,6 +88,7 @@ public class EntityMap
         int readerIndex = packet.readerIndex();
         int packetId = DefinedPacket.readVarInt( packet );
         int packetIdLength = packet.readerIndex() - readerIndex;
+
         if ( packetId == 0x0D /* Collect Item */ || packetId == 0x1B /* Attach Entity */ )
         {
             int readId = packet.getInt( packetIdLength + 4 );
@@ -94,6 +98,33 @@ public class EntityMap
             } else if ( readId == clientEntityId )
             {
                 packet.setInt( packetIdLength + 4, serverEntityId );
+            }      
+        } else if ( packetId == 0x0C /* Spawn Player */ && version == 5 )
+        {
+            DefinedPacket.readVarInt(packet);
+            int idLength = packet.readerIndex() - readerIndex - packetIdLength;
+            String uuid = DefinedPacket.readString(packet);
+            String username = DefinedPacket.readString(packet);
+            int props = DefinedPacket.readVarInt(packet);
+            if (props == 0)
+            {
+                ByteBuf rest = packet.slice().copy();
+                packet.readerIndex(readerIndex);
+                packet.writerIndex(readerIndex + packetIdLength + idLength);
+                // Get our addr, we need it to generate our own custom UUID.
+                EthernetAddress addr = EthernetAddress.fromInterface();
+                // UUID generator to spoof the player's UUID to prevent "Server sent invalid player data"
+                TimeBasedGenerator uuidGenerator = Generators.timeBasedGenerator(addr);
+                String newUUID = uuidGenerator.generate().toString();
+                // Write our new UUID instead of the one we got from mojang.
+                DefinedPacket.writeString(newUUID, packet);
+                // Same username though.
+                DefinedPacket.writeString(username, packet);
+                // Tell the clients there is no additional data to be processed.
+                DefinedPacket.writeVarInt(0, packet);
+                // Write.
+                packet.writeBytes(rest);
+                rest.release();
             }
         } else if ( packetId == 0x13 /* Destroy Entities */ )
         {
@@ -143,74 +174,41 @@ public class EntityMap
                     }
                 }
             }
-        } else if ( packetId == 0x0C /* Spawn Player */ && version == 5 )
+            packet.readerIndex( readerIndex );
+        }
+	}
+
+        private static void rewrite(ByteBuf packet, int serverEntityId, int clientEntityId, boolean[] ints, boolean[] varints)
         {
-            DefinedPacket.readVarInt( packet );
-            int idLength = packet.readerIndex() - readerIndex - packetIdLength;
-            String uuid = DefinedPacket.readString( packet );
-            String username = DefinedPacket.readString( packet );
-            int props = DefinedPacket.readVarInt( packet );
-            if ( props == 0 )
+            int readerIndex = packet.readerIndex();
+            int packetId = DefinedPacket.readVarInt( packet );
+            int packetIdLength = packet.readerIndex() - readerIndex;
+
+            if ( ints[packetId] )
             {
-                UserConnection player = (UserConnection) BungeeCord.getInstance().getPlayer( username );
-                if ( player != null )
+                int readId = packet.getInt( packetIdLength );
+                if ( readId == serverEntityId )
                 {
-                    LoginResult profile = player.getPendingConnection().getLoginProfile();
-                    if ( profile != null && profile.getProperties() != null
-                            && profile.getProperties().length >= 1 )
-                    {
-                        ByteBuf rest = packet.slice().copy();
-                        packet.readerIndex( readerIndex );
-                        packet.writerIndex( readerIndex + packetIdLength + idLength );
-                        DefinedPacket.writeString( player.getUniqueId().toString(), packet );
-                        DefinedPacket.writeString( username, packet);
-                        DefinedPacket.writeVarInt( profile.getProperties().length, packet );
-                        for ( LoginResult.Property property : profile.getProperties() )
-                        {
-                            DefinedPacket.writeString( property.getName(), packet );
-                            DefinedPacket.writeString( property.getValue(), packet );
-                            DefinedPacket.writeString( property.getSignature(), packet );
-                        }
-                        packet.writeBytes( rest );
-                        rest.release();
-                    }
+                    packet.setInt( packetIdLength, clientEntityId );
+                } else if ( readId == clientEntityId )
+                {
+                    packet.setInt( packetIdLength, serverEntityId );
+                }
+            } else if ( varints[packetId] )
+            {
+                // Need to rewrite the packet because VarInts are variable length
+                int readId = DefinedPacket.readVarInt( packet );
+                int readIdLength = packet.readerIndex() - readerIndex - packetIdLength;
+                if ( readId == serverEntityId || readId == clientEntityId )
+                {
+                    ByteBuf data = packet.slice().copy();
+                    packet.readerIndex( readerIndex );
+                    packet.writerIndex( packetIdLength );
+                    DefinedPacket.writeVarInt( readId == serverEntityId ? clientEntityId : serverEntityId, packet );
+                    packet.writeBytes( data );
+                    data.release();
                 }
             }
+            packet.readerIndex( readerIndex );
         }
-        packet.readerIndex( readerIndex );
     }
-
-    private static void rewrite(ByteBuf packet, int serverEntityId, int clientEntityId, boolean[] ints, boolean[] varints)
-    {
-        int readerIndex = packet.readerIndex();
-        int packetId = DefinedPacket.readVarInt( packet );
-        int packetIdLength = packet.readerIndex() - readerIndex;
-
-        if ( ints[packetId] )
-        {
-            int readId = packet.getInt( packetIdLength );
-            if ( readId == serverEntityId )
-            {
-                packet.setInt( packetIdLength, clientEntityId );
-            } else if ( readId == clientEntityId )
-            {
-                packet.setInt( packetIdLength, serverEntityId );
-            }
-        } else if ( varints[packetId] )
-        {
-            // Need to rewrite the packet because VarInts are variable length
-            int readId = DefinedPacket.readVarInt( packet );
-            int readIdLength = packet.readerIndex() - readerIndex - packetIdLength;
-            if ( readId == serverEntityId || readId == clientEntityId )
-            {
-                ByteBuf data = packet.slice().copy();
-                packet.readerIndex( readerIndex );
-                packet.writerIndex( packetIdLength );
-                DefinedPacket.writeVarInt( readId == serverEntityId ? clientEntityId : serverEntityId, packet );
-                packet.writeBytes( data );
-                data.release();
-            }
-        }
-        packet.readerIndex( readerIndex );
-    }
-}
