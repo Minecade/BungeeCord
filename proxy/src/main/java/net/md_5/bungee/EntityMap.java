@@ -174,8 +174,8 @@ public class EntityMap
                     }
                 }
             }
+		}
             packet.readerIndex( readerIndex );
-        }
 	}
 
         private static void rewrite(ByteBuf packet, int serverEntityId, int clientEntityId, boolean[] ints, boolean[] varints)
