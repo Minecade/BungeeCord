@@ -32,7 +32,11 @@ public class PlayerInfoSerializer implements JsonSerializer<ServerPing.PlayerInf
             info.setId( js.get( "id" ).getAsString() );
         } else
         {
-            info.setUniqueId( UUID.fromString( js.get( "id" ).getAsString() ) );
+			// This throws IllegalArguementException because we're spoofing UUID's to support 1.7.2 - 1.7.8!
+            //info.setUniqueId( UUID.fromString( js.get( "id" ).getAsString() ) );
+			
+			// Instead, we will just set the ID to raw string since we don't care about breaking skins.
+			info.setId( js.get( "id" ).getAsString() );
         }
         return null;
     }
@@ -47,7 +51,10 @@ public class PlayerInfoSerializer implements JsonSerializer<ServerPing.PlayerInf
             out.addProperty( "id", src.getId() );
         } else
         {
-            out.addProperty( "id", src.getUniqueId().toString() );
+			// getUniqueId() will likely return null.
+            //out.addProperty( "id", src.getUniqueId().toString() );
+			
+			out.addProperty( "id", src.getId() );
         }
         return out;
     }
